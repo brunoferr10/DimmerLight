@@ -1,0 +1,309 @@
+import { useEffect, useState, FormEvent } from "react";
+
+type Feedback = {
+  cdFeedback?: number;
+  dsFeedback: string;
+  dsComentario: string;
+  dtEnvio: string;
+  cdServico: number | string;
+};
+
+type Servico = {
+  cdServico: number;
+  dsServico: string;
+  cdCliente: number;
+};
+
+type Cliente = {
+  cdCliente: number;
+  dsNome: string;
+};
+
+const API_URL = "http://localhost:8080/feedback";
+const API_SERVICO = "http://localhost:8080/servico";
+const API_CLIENTE = "http://localhost:8080/cliente";
+
+export default function FeedbackPage() {
+  const [lista, setLista] = useState<Feedback[]>([]);
+  const [servicos, setServicos] = useState<Servico[]>([]);
+  const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [mostrarLista, setMostrarLista] = useState(false);
+  const [editandoId, setEditandoId] = useState<number | null>(null);
+
+  const [form, setForm] = useState<Feedback>({
+    dsFeedback: "",
+    dsComentario: "",
+    dtEnvio: "",
+    cdServico: "",
+  });
+
+  // =======================================
+  // CARREGAR FEEDBACKS / SERVIÇOS / CLIENTES
+  // =======================================
+
+  useEffect(() => {
+    carregarFeedbacks();
+    carregarServicos();
+    carregarClientes();
+  }, []);
+
+  async function carregarFeedbacks() {
+    try {
+      const res = await fetch(API_URL);
+      if (!res.ok) return setLista([]);
+      setLista(await res.json());
+    } catch {
+      console.log("Erro ao carregar feedbacks");
+    }
+  }
+
+  async function carregarServicos() {
+    try {
+      const res = await fetch(API_SERVICO);
+      if (!res.ok) return setServicos([]);
+      setServicos(await res.json());
+    } catch {
+      console.log("Erro ao carregar serviços");
+    }
+  }
+
+  async function carregarClientes() {
+    try {
+      const res = await fetch(API_CLIENTE);
+      if (!res.ok) return setClientes([]);
+      setClientes(await res.json());
+    } catch {
+      console.log("Erro ao carregar clientes");
+    }
+  }
+
+  // =======================================
+  // HELPER PARA PEGAR NOME DO CLIENTE
+  // =======================================
+
+  function nomeCliente(id: number | string) {
+    const c = clientes.find((x) => x.cdCliente === Number(id));
+    return c ? c.dsNome : "";
+  }
+
+  function nomeServicoComCliente(id: number | string) {
+    const s = servicos.find((x) => x.cdServico === Number(id));
+    if (!s) return `Serviço ${id}`;
+    return `${s.dsServico} - Cliente: ${nomeCliente(s.cdCliente)}`;
+  }
+
+  // =======================================
+  // FORM
+  // =======================================
+
+  function handleChange(e: any) {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  }
+
+  function limparFormulario() {
+    setEditandoId(null);
+    setForm({
+      dsFeedback: "",
+      dsComentario: "",
+      dtEnvio: "",
+      cdServico: "",
+    });
+  }
+
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+
+    const metodo = editandoId ? "PUT" : "POST";
+    const url = editandoId ? `${API_URL}/${editandoId}` : API_URL;
+
+    const payload = {
+      ...form,
+      cdServico: Number(form.cdServico),
+    };
+
+    const res = await fetch(url, {
+      method: metodo,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      alert("Erro ao salvar feedback.");
+      return;
+    }
+
+    carregarFeedbacks();
+    limparFormulario();
+    alert(editandoId ? "Feedback atualizado!" : "Feedback cadastrado!");
+  }
+
+  function iniciarEdicao(f: Feedback) {
+    setEditandoId(f.cdFeedback ?? null);
+    setForm({
+      dsFeedback: f.dsFeedback,
+      dsComentario: f.dsComentario,
+      dtEnvio: f.dtEnvio,
+      cdServico: f.cdServico,
+    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  async function excluirFeedback(id?: number) {
+    if (!id) return;
+    if (!confirm("Deseja realmente excluir este feedback?")) return;
+
+    const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+
+    if (res.status === 204) carregarFeedbacks();
+  }
+
+  // =======================================
+  // RENDER
+  // =======================================
+
+  return (
+    <main className="p-8 flex flex-col gap-8">
+
+      {/* Título */}
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold text-[#ff6600]">Feedbacks</h1>
+
+        <button
+          onClick={() => setMostrarLista(!mostrarLista)}
+          className="bg-[#ff6600] text-black font-semibold px-4 py-2 rounded-md hover:bg-[#ff8533]"
+        >
+          {mostrarLista ? "Ocultar Lista" : "Listar Feedbacks"}
+        </button>
+      </div>
+
+      {/* Formulário */}
+      <form
+        onSubmit={handleSubmit}
+        className="bg-[#111] border border-[#222] p-8 rounded-2xl shadow-lg flex flex-col gap-6 max-w-5xl"
+      >
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+          <div className="flex flex-col">
+            <label className="font-semibold">Título da Avaliação</label>
+            <input
+              name="dsFeedback"
+              value={form.dsFeedback}
+              onChange={handleChange}
+              required
+              className="p-3 rounded bg-[#181818] border border-[#333]"
+            />
+          </div>
+
+          <div className="flex flex-col">
+            <label className="font-semibold">Data de envio</label>
+            <input
+              type="date"
+              name="dtEnvio"
+              value={form.dtEnvio}
+              onChange={handleChange}
+              required
+              className="p-3 rounded bg-[#181818] border border-[#333]"
+            />
+          </div>
+
+          <div className="flex flex-col md:col-span-2">
+            <label className="font-semibold">Comentário</label>
+            <textarea
+              name="dsComentario"
+              value={form.dsComentario}
+              onChange={handleChange}
+              required
+              className="p-3 rounded bg-[#181818] border border-[#333] h-28"
+            />
+          </div>
+
+          {/* Serviço relacionado */}
+          <div className="flex flex-col">
+            <label className="font-semibold">Serviço relacionado</label>
+            <select
+              name="cdServico"
+              value={form.cdServico}
+              onChange={handleChange}
+              required
+              className="p-3 rounded bg-[#181818] border border-[#333]"
+            >
+              <option value="">Selecione...</option>
+
+              {servicos.map((s) => (
+                <option key={s.cdServico} value={s.cdServico}>
+                  {s.dsServico} — Cliente: {nomeCliente(s.cdCliente)}
+                </option>
+              ))}
+            </select>
+          </div>
+
+        </div>
+
+        <button
+          type="submit"
+          className={`w-full text-white font-bold py-3 rounded-lg mt-4 ${
+            editandoId ? "bg-yellow-500 hover:bg-yellow-600" : "bg-green-600 hover:bg-green-700"
+          }`}
+        >
+          {editandoId ? "Salvar Alterações" : "Salvar Avaliação"}
+        </button>
+
+      </form>
+
+      {/* Lista */}
+      {mostrarLista && (
+        <section className="bg-[#111] border border-[#222] rounded-2xl p-6 max-w-6xl">
+          
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="border-b border-[#333] text-white">
+                <th className="py-2">ID</th>
+                <th className="py-2">Avaliação</th>
+                <th className="py-2">Comentário</th>
+                <th className="py-2">Data</th>
+                <th className="py-2">Serviço / Cliente</th>
+                <th className="py-2">Ações</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {lista.map((f) => (
+                <tr key={f.cdFeedback} className="border-b border-[#222] text-white">
+                  
+                  <td className="py-2">{f.cdFeedback}</td>
+                  <td className="py-2">{f.dsFeedback}</td>
+                  <td className="py-2">{f.dsComentario}</td>
+                  <td className="py-2">{f.dtEnvio}</td>
+
+                  <td className="py-2">
+                    {nomeServicoComCliente(f.cdServico)}
+                  </td>
+
+                  <td className="py-2 text-center space-x-2">
+                    <button
+                      onClick={() => iniciarEdicao(f)}
+                      className="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-black rounded"
+                    >
+                      Editar
+                    </button>
+
+                    <button
+                      onClick={() => excluirFeedback(f.cdFeedback)}
+                      className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded"
+                    >
+                      Excluir
+                    </button>
+                  </td>
+
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+        </section>
+      )}
+    </main>
+  );
+}
