@@ -28,7 +28,7 @@ export default function Integrantes() {
       nome: "Leonardo Aragaki Rodrigues",
       rm: "RM562944",
       turma: "1TDSR",
-      github: "https://github.com/leonardoaragaki",
+      github: "https://github.com/leoaragaki",
       linkedin: "https://br.linkedin.com/in/leonardo-aragaki-rodrigues-066a5aa1",
       img: Leonardo,
     },
