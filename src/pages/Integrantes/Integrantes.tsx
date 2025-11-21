@@ -12,7 +12,7 @@ export default function Integrantes() {
       nome: "Bruno Ferreira",
       rm: "RM563489",
       turma: "1TDSR",
-      github: "https://github.com/brunoferreira",
+      github: "https://github.com/brunoferr10",
       linkedin: "https://www.linkedin.com/in/bruno-ferreira-4837a0207/",
       img: Bruno,
     },
