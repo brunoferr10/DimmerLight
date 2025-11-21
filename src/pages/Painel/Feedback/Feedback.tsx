@@ -19,9 +19,9 @@ type Cliente = {
   dsNome: string;
 };
 
-const API_URL = "http://localhost:8080/feedback";
-const API_SERVICO = "http://localhost:8080/servico";
-const API_CLIENTE = "http://localhost:8080/cliente";
+const API_URL = "https://five63489.onrender.com/feedback";
+const API_SERVICO = "https://five63489.onrender.com/servico";
+const API_CLIENTE = "https://five63489.onrender.com/cliente";
 
 export default function FeedbackPage() {
   const [lista, setLista] = useState<Feedback[]>([]);
@@ -37,9 +37,6 @@ export default function FeedbackPage() {
     cdServico: "",
   });
 
-  // =======================================
-  // CARREGAR FEEDBACKS / SERVIÇOS / CLIENTES
-  // =======================================
 
   useEffect(() => {
     carregarFeedbacks();
@@ -77,10 +74,6 @@ export default function FeedbackPage() {
     }
   }
 
-  // =======================================
-  // HELPER PARA PEGAR NOME DO CLIENTE
-  // =======================================
-
   function nomeCliente(id: number | string) {
     const c = clientes.find((x) => x.cdCliente === Number(id));
     return c ? c.dsNome : "";
@@ -91,10 +84,6 @@ export default function FeedbackPage() {
     if (!s) return `Serviço ${id}`;
     return `${s.dsServico} - Cliente: ${nomeCliente(s.cdCliente)}`;
   }
-
-  // =======================================
-  // FORM
-  // =======================================
 
   function handleChange(e: any) {
     const { name, value } = e.target;
@@ -157,10 +146,6 @@ export default function FeedbackPage() {
 
     if (res.status === 204) carregarFeedbacks();
   }
-
-  // =======================================
-  // RENDER
-  // =======================================
 
   return (
     <main className="p-8 flex flex-col gap-8">
