@@ -8,9 +8,9 @@ type Pagamento = {
   dsStatusPag: string;
 };
 
-const API_URL = "http://localhost:8080/pagamento";
+const API_URL = "https://five63489.onrender.com/pagamento";
 
-// Opções fixas (como combinamos)
+
 const FORMAS_PAGAMENTO = [
   "Pix",
   "Cartão de Crédito",
@@ -34,7 +34,7 @@ export default function Pagamentos() {
     dsStatusPag: "",
   });
 
-  // Carregar pagamentos ao montar (opcional, igual fizemos em clientes)
+  
   useEffect(() => {
     carregarPagamentos();
   }, []);
@@ -130,7 +130,7 @@ export default function Pagamentos() {
     setForm({
       dsFormaPag: p.dsFormaPag,
       vlServico1: p.vlServico1,
-      dtPagamento: p.dtPagamento, // já vem no formato yyyy-MM-dd do backend
+      dtPagamento: p.dtPagamento,
       dsStatusPag: p.dsStatusPag,
     });
     window.scrollTo({ top: 0, behavior: "smooth" });
