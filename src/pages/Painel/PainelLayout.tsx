@@ -1,4 +1,3 @@
-// src/pages/Painel/PainelLayout.tsx
 import { Outlet } from "react-router-dom";
 import HeaderPainel from "../../components/HeaderPainel";
 
