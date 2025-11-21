@@ -1,6 +1,5 @@
 import { useEffect, useState, FormEvent } from "react";
 
-// Tipo
 type Contratado = {
   cdContratado?: number;
   nmCnpj: string;
@@ -12,10 +11,8 @@ type Contratado = {
   dsEstrelas: number;
 };
 
-// API
 const API_URL = "https://five63489.onrender.com/contratado";
 
-// Selects padrão
 const REGIOES = ["Zona Norte", "Zona Sul", "Zona Leste", "Zona Oeste", "Centro"];
 const CIDADES = ["São Paulo", "Guarulhos", "Santo André", "Osasco", "Barueri"];
 const ESPECIALIDADES = [
@@ -32,7 +29,6 @@ export default function Contratados() {
   const [mostrarLista, setMostrarLista] = useState(false);
   const [editandoId, setEditandoId] = useState<number | null>(null);
 
-  // Form
   const [form, setForm] = useState<Contratado>({
     nmCnpj: "",
     dsNome: "",
@@ -43,7 +39,6 @@ export default function Contratados() {
     dsEstrelas: 0,
   });
 
-  // Carregar dados iniciais
   useEffect(() => {
     carregarContratados();
   }, []);
@@ -59,7 +54,6 @@ export default function Contratados() {
     }
   }
 
-  // Máscara inteligente do telefone
   const formatarTelefone = (valor: string) => {
     valor = valor.replace(/\D/g, "");
     if (valor.length <= 10) {
