@@ -9,7 +9,7 @@ type Cliente = {
   nmTelefone: string;
 };
 
-const API_URL = "http://localhost:8080/cliente";
+const API_URL = "https://five63489.onrender.com/cliente";
 
 export default function Clientes() {
   const [clientes, setClientes] = useState<Cliente[]>([]);
