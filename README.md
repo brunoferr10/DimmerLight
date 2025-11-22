@@ -117,7 +117,7 @@ ARRUMAI-FRONTEND/
  [https://github.com/brunoferr10/GS_Front-End.git](https://github.com/brunoferr10/GS_Front-End.git)
 
 ###  Deploy na Vercel  
- 
+ [https://gs-front-end-one.vercel.app/](https://gs-front-end-one.vercel.app/)
 
 ###  Vídeo de Apresentação (YouTube)  
  
