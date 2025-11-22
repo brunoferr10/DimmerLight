@@ -1,4 +1,5 @@
 import { useEffect, useState, FormEvent } from "react";
+import { useTheme } from "@/contexts/ThemeContext";
 
 type Feedback = {
   cdFeedback?: number;
@@ -24,10 +25,14 @@ const API_SERVICO = "https://five63489.onrender.com/servico";
 const API_CLIENTE = "https://five63489.onrender.com/cliente";
 
 export default function FeedbackPage() {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+
   const [lista, setLista] = useState<Feedback[]>([]);
   const [servicos, setServicos] = useState<Servico[]>([]);
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [mostrarLista, setMostrarLista] = useState(false);
+  const [loadingLista, setLoadingLista] = useState(false);
   const [editandoId, setEditandoId] = useState<number | null>(null);
 
   const [form, setForm] = useState<Feedback>({
@@ -37,7 +42,6 @@ export default function FeedbackPage() {
     cdServico: "",
   });
 
-
   useEffect(() => {
     carregarFeedbacks();
     carregarServicos();
@@ -45,12 +49,15 @@ export default function FeedbackPage() {
   }, []);
 
   async function carregarFeedbacks() {
+    setLoadingLista(true);
     try {
       const res = await fetch(API_URL);
       if (!res.ok) return setLista([]);
       setLista(await res.json());
     } catch {
       console.log("Erro ao carregar feedbacks");
+    } finally {
+      setLoadingLista(false);
     }
   }
 
@@ -82,7 +89,7 @@ export default function FeedbackPage() {
   function nomeServicoComCliente(id: number | string) {
     const s = servicos.find((x) => x.cdServico === Number(id));
     if (!s) return `Serviço ${id}`;
-    return `${s.dsServico} - Cliente: ${nomeCliente(s.cdCliente)}`;
+    return `${s.dsServico} — Cliente: ${nomeCliente(s.cdCliente)}`;
   }
 
   function handleChange(e: any) {
@@ -143,31 +150,35 @@ export default function FeedbackPage() {
     if (!confirm("Deseja realmente excluir este feedback?")) return;
 
     const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
-
     if (res.status === 204) carregarFeedbacks();
   }
 
   return (
     <main className="p-8 flex flex-col gap-8">
 
-      {/* Título */}
+      {/* TÍTULO */}
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-[#ff6600]">Feedbacks</h1>
 
         <button
-          onClick={() => setMostrarLista(!mostrarLista)}
+          onClick={() => {
+            const novo = !mostrarLista;
+            setMostrarLista(novo);
+            if (novo) carregarFeedbacks();
+          }}
           className="bg-[#ff6600] text-black font-semibold px-4 py-2 rounded-md hover:bg-[#ff8533]"
         >
           {mostrarLista ? "Ocultar Lista" : "Listar Feedbacks"}
         </button>
       </div>
 
-      {/* Formulário */}
+      {/* FORMULÁRIO */}
       <form
         onSubmit={handleSubmit}
-        className="bg-[#111] border border-[#222] p-8 rounded-2xl shadow-lg flex flex-col gap-6 max-w-5xl"
+        className={`border p-8 rounded-2xl shadow-lg flex flex-col gap-6 max-w-5xl ${
+          isDark ? "bg-[#111] border-[#222]" : "bg-white border-gray-300"
+        }`}
       >
-        
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
           <div className="flex flex-col">
@@ -177,7 +188,10 @@ export default function FeedbackPage() {
               value={form.dsFeedback}
               onChange={handleChange}
               required
-              className="p-3 rounded bg-[#181818] border border-[#333]"
+              placeholder="Ex.: Atendimento rápido e eficiente"
+              className={`p-3 rounded border ${
+                isDark ? "bg-[#181818] border-[#333]" : "bg-gray-100"
+              }`}
             />
           </div>
 
@@ -189,7 +203,9 @@ export default function FeedbackPage() {
               value={form.dtEnvio}
               onChange={handleChange}
               required
-              className="p-3 rounded bg-[#181818] border border-[#333]"
+              className={`p-3 rounded border ${
+                isDark ? "bg-[#181818] border-[#333]" : "bg-gray-100"
+              }`}
             />
           </div>
 
@@ -200,11 +216,13 @@ export default function FeedbackPage() {
               value={form.dsComentario}
               onChange={handleChange}
               required
-              className="p-3 rounded bg-[#181818] border border-[#333] h-28"
+              placeholder="Descreva como foi sua experiência..."
+              className={`p-3 rounded border h-28 ${
+                isDark ? "bg-[#181818] border-[#333]" : "bg-gray-100"
+              }`}
             />
           </div>
 
-          {/* Serviço relacionado */}
           <div className="flex flex-col">
             <label className="font-semibold">Serviço relacionado</label>
             <select
@@ -212,7 +230,9 @@ export default function FeedbackPage() {
               value={form.cdServico}
               onChange={handleChange}
               required
-              className="p-3 rounded bg-[#181818] border border-[#333]"
+              className={`p-3 rounded border ${
+                isDark ? "bg-[#181818] border-[#333]" : "bg-gray-100"
+              }`}
             >
               <option value="">Selecione...</option>
 
@@ -223,70 +243,86 @@ export default function FeedbackPage() {
               ))}
             </select>
           </div>
-
         </div>
 
         <button
           type="submit"
           className={`w-full text-white font-bold py-3 rounded-lg mt-4 ${
-            editandoId ? "bg-yellow-500 hover:bg-yellow-600" : "bg-green-600 hover:bg-green-700"
+            editandoId
+              ? "bg-yellow-500 hover:bg-yellow-600"
+              : "bg-green-600 hover:bg-green-700"
           }`}
         >
           {editandoId ? "Salvar Alterações" : "Salvar Avaliação"}
         </button>
-
       </form>
 
-      {/* Lista */}
+      {/* LISTA */}
       {mostrarLista && (
-        <section className="bg-[#111] border border-[#222] rounded-2xl p-6 max-w-6xl">
-          
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="border-b border-[#333] text-white">
-                <th className="py-2">ID</th>
-                <th className="py-2">Avaliação</th>
-                <th className="py-2">Comentário</th>
-                <th className="py-2">Data</th>
-                <th className="py-2">Serviço / Cliente</th>
-                <th className="py-2">Ações</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {lista.map((f) => (
-                <tr key={f.cdFeedback} className="border-b border-[#222] text-white">
-                  
-                  <td className="py-2">{f.cdFeedback}</td>
-                  <td className="py-2">{f.dsFeedback}</td>
-                  <td className="py-2">{f.dsComentario}</td>
-                  <td className="py-2">{f.dtEnvio}</td>
-
-                  <td className="py-2">
-                    {nomeServicoComCliente(f.cdServico)}
-                  </td>
-
-                  <td className="py-2 text-center space-x-2">
-                    <button
-                      onClick={() => iniciarEdicao(f)}
-                      className="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-black rounded"
-                    >
-                      Editar
-                    </button>
-
-                    <button
-                      onClick={() => excluirFeedback(f.cdFeedback)}
-                      className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded"
-                    >
-                      Excluir
-                    </button>
-                  </td>
-
+        <section
+          className={`rounded-2xl p-6 max-w-6xl border ${
+            isDark ? "bg-[#111] border-[#222]" : "bg-gray-100 border-gray-300"
+          }`}
+        >
+          {loadingLista ? (
+            <p className={isDark ? "text-white" : "text-black"}>
+              Carregando feedbacks...
+            </p>
+          ) : lista.length === 0 ? (
+            <p className={isDark ? "text-white" : "text-black"}>
+              Nenhum feedback cadastrado.
+            </p>
+          ) : (
+            <table className="w-full text-sm border-collapse">
+              <thead>
+                <tr
+                  className={`border-b ${
+                    isDark ? "border-[#333] text-white" : "border-gray-500 text-black"
+                  }`}
+                >
+                  <th className="py-2">ID</th>
+                  <th className="py-2">Avaliação</th>
+                  <th className="py-2">Comentário</th>
+                  <th className="py-2">Data</th>
+                  <th className="py-2">Serviço / Cliente</th>
+                  <th className="py-2">Ações</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
 
+              <tbody>
+                {lista.map((f) => (
+                  <tr
+                    key={f.cdFeedback}
+                    className={`border-b ${
+                      isDark ? "border-[#222] text-white hover:bg-[#1a1a1a]" : "border-gray-300 text-black hover:bg-gray-200"
+                    }`}
+                  >
+                    <td className="py-2">{f.cdFeedback}</td>
+                    <td className="py-2">{f.dsFeedback}</td>
+                    <td className="py-2">{f.dsComentario}</td>
+                    <td className="py-2">{f.dtEnvio}</td>
+                    <td className="py-2">{nomeServicoComCliente(f.cdServico)}</td>
+
+                    <td className="py-2 text-center space-x-2">
+                      <button
+                        onClick={() => iniciarEdicao(f)}
+                        className="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-black rounded"
+                      >
+                        Editar
+                      </button>
+
+                      <button
+                        onClick={() => excluirFeedback(f.cdFeedback)}
+                        className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded"
+                      >
+                        Excluir
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </section>
       )}
     </main>

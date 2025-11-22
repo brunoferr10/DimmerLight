@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTheme } from "@/contexts/ThemeContext";
 
 type Servico = {
   cdServico?: number;
@@ -51,6 +52,9 @@ const SEGMENTOS = [
 ];
 
 export default function Servicos() {
+  const { theme } = useTheme(); 
+  const isDark = theme === "dark"; 
+
   const [servicos, setServicos] = useState<Servico[]>([]);
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [contratados, setContratados] = useState<Contratado[]>([]);
@@ -151,7 +155,6 @@ export default function Servicos() {
   };
 
   useEffect(() => {
-  
     loadClientes();
     loadContratados();
     loadPagamentos();
@@ -290,8 +293,8 @@ export default function Servicos() {
 
   return (
     <main className="p-8 flex flex-col gap-8">
-      {/* Título + botão listar */}
-      <div className="flex items-center justify-between">
+      {/* HEADER */}
+      <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-[#ff6600]">Serviços</h1>
 
         <button
@@ -300,45 +303,48 @@ export default function Servicos() {
             setMostrarLista(novo);
             if (novo) loadServicos();
           }}
-          className="bg-[#ff6600] text-black font-semibold px-4 py-2 rounded-lg hover:bg-[#ff8533] transition"
+          className="bg-[#ff6600] text-black font-semibold px-4 py-2 rounded-md hover:bg-[#ff8533] transition"
         >
           {mostrarLista ? "Ocultar Lista" : "Listar Serviços"}
         </button>
       </div>
 
-      {/* Formulário */}
+      {/* FORM */}
       <form
         onSubmit={handleSubmit}
-        className="bg-[#111] border border-[#222] rounded-2xl p-8 shadow flex flex-col gap-6 max-w-6xl"
+        className={`border rounded-2xl p-8 shadow-lg flex flex-col gap-6 max-w-6xl ${
+          isDark ? "bg-[#111] border-[#222]" : "bg-white border-gray-300"
+        }`}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Descrição do serviço */}
-          <div className="md:col-span-2">
+          
+          <div className="md:col-span-2 lg:col-span-3">
             <label className="text-sm font-semibold mb-1 block">
               Descrição do serviço
-            </label>
-            <input
-              type="text"
-              name="dsServico"
-              value={form.dsServico}
-              onChange={handleChange}
-              required
-              className="w-full bg-[#181818] border border-[#333] rounded-lg px-3 py-2 text-sm"
-              placeholder="Ex: Reforma do banheiro, troca de piso..."
-            />
-          </div>
+              </label>
+                <input
+                type="text"
+                name="dsServico"
+                value={form.dsServico}
+                onChange={handleChange}
+                required
+                className={`w-full rounded-lg px-3 py-2 text-sm border ${
+                  isDark ? "bg-[#181818] border-[#333]" : "bg-white border-gray-300"
+                }`}
+                placeholder="Ex: Reforma do banheiro, troca de piso..."
+              />
+            </div>
 
-          {/* Grau de dificuldade */}
           <div>
-            <label className="text-sm font-semibold mb-1 block">
-              Grau de dificuldade
-            </label>
+            <label className="font-semibold">Grau de dificuldade</label>
             <select
               name="dsGrauDificuldade"
               value={form.dsGrauDificuldade}
               onChange={handleChange}
               required
-              className="w-full bg-[#181818] border border-[#333] rounded-lg px-3 py-2 text-sm"
+              className={`p-3 rounded border w-full ${
+                isDark ? "bg-[#181818] border-[#333]" : "bg-gray-100"
+              }`}
             >
               <option value="">Selecione...</option>
               {GRAUS_DIFICULDADE.map((g) => (
@@ -349,15 +355,16 @@ export default function Servicos() {
             </select>
           </div>
 
-          {/* Segmento */}
           <div>
-            <label className="text-sm font-semibold mb-1 block">Segmento</label>
+            <label className="font-semibold">Segmento</label>
             <select
               name="dsSegmento"
               value={form.dsSegmento}
               onChange={handleChange}
               required
-              className="w-full bg-[#181818] border border-[#333] rounded-lg px-3 py-2 text-sm"
+              className={`p-3 rounded border w-full ${
+                isDark ? "bg-[#181818] border-[#333]" : "bg-gray-100"
+              }`}
             >
               <option value="">Selecione...</option>
               {SEGMENTOS.map((s) => (
@@ -368,16 +375,17 @@ export default function Servicos() {
             </select>
           </div>
 
-          {/* Cliente */}
           <div>
-            <label className="text-sm font-semibold mb-1 block">Cliente</label>
+            <label className="font-semibold">Cliente</label>
             <select
               name="cdCliente"
               value={form.cdCliente}
               onChange={handleChange}
               onClick={loadClientes}
               required
-              className="w-full bg-[#181818] border border-[#333] rounded-lg px-3 py-2 text-sm"
+              className={`p-3 rounded border w-full ${
+                isDark ? "bg-[#181818] border-[#333]" : "bg-gray-100"
+              }`}
             >
               {carregandoClientes ? (
                 <option value="">Carregando clientes...</option>
@@ -394,18 +402,17 @@ export default function Servicos() {
             </select>
           </div>
 
-          {/* Contratado */}
           <div>
-            <label className="text-sm font-semibold mb-1 block">
-              Profissional / Empresa
-            </label>
+            <label className="font-semibold">Profissional / Empresa</label>
             <select
               name="cdContratado"
               value={form.cdContratado}
               onChange={handleChange}
               onClick={loadContratados}
               required
-              className="w-full bg-[#181818] border border-[#333] rounded-lg px-3 py-2 text-sm"
+              className={`p-3 rounded border w-full ${
+                isDark ? "bg-[#181818] border-[#333]" : "bg-gray-100"
+              }`}
             >
               {carregandoContratados ? (
                 <option value="">Carregando contratados...</option>
@@ -423,18 +430,17 @@ export default function Servicos() {
             </select>
           </div>
 
-          {/* Pagamento */}
           <div>
-            <label className="text-sm font-semibold mb-1 block">
-              Forma de pagamento
-            </label>
+            <label className="font-semibold">Pagamento</label>
             <select
               name="cdPagamento"
               value={form.cdPagamento}
               onChange={handleChange}
               onClick={loadPagamentos}
               required
-              className="w-full bg-[#181818] border border-[#333] rounded-lg px-3 py-2 text-sm"
+              className={`p-3 rounded border w-full ${
+                isDark ? "bg-[#181818] border-[#333]" : "bg-gray-100"
+              }`}
             >
               {carregandoPagamentos ? (
                 <option value="">Carregando pagamentos...</option>
@@ -451,16 +457,17 @@ export default function Servicos() {
             </select>
           </div>
 
-          {/* Feedback */}
           <div>
-            <label className="text-sm font-semibold mb-1 block">Feedback</label>
+            <label className="font-semibold">Feedback</label>
             <select
               name="cdFeedback"
               value={form.cdFeedback}
               onChange={handleChange}
               onClick={loadFeedbacks}
               required
-              className="w-full bg-[#181818] border border-[#333] rounded-lg px-3 py-2 text-sm"
+              className={`p-3 rounded border w-full ${
+                isDark ? "bg-[#181818] border-[#333]" : "bg-gray-100"
+              }`}
             >
               {carregandoFeedbacks ? (
                 <option value="">Carregando feedbacks...</option>
@@ -477,47 +484,45 @@ export default function Servicos() {
             </select>
           </div>
 
-          {/* Datas */}
           <div>
-            <label className="text-sm font-semibold mb-1 block">
-              Data de previsão
-            </label>
+            <label className="font-semibold">Data de previsão</label>
             <input
               type="date"
               name="dtPrevisao"
               value={form.dtPrevisao}
               onChange={handleChange}
               required
-              className="w-full bg-[#181818] border border-[#333] rounded-lg px-3 py-2 text-sm"
+              className={`p-3 rounded border w-full ${
+                isDark ? "bg-[#181818] border-[#333]" : "bg-gray-100"
+              }`}
             />
           </div>
 
           <div>
-            <label className="text-sm font-semibold mb-1 block">
-              Data de conclusão
-            </label>
+            <label className="font-semibold">Data de conclusão</label>
             <input
               type="date"
               name="dtConclusao"
               value={form.dtConclusao}
               onChange={handleChange}
               required
-              className="w-full bg-[#181818] border border-[#333] rounded-lg px-3 py-2 text-sm"
+              className={`p-3 rounded border w-full ${
+                isDark ? "bg-[#181818] border-[#333]" : "bg-gray-100"
+              }`}
             />
           </div>
 
-          {/* Comentário */}
           <div className="md:col-span-2 lg:col-span-3">
-            <label className="text-sm font-semibold mb-1 block">
-              Comentário / Observações
-            </label>
+            <label className="font-semibold">Comentário / Observações</label>
             <textarea
               name="dsComentario"
               value={form.dsComentario}
               onChange={handleChange}
               rows={3}
-              className="w-full bg-[#181818] border border-[#333] rounded-lg px-3 py-2 text-sm resize-y"
-              placeholder="Detalhes do serviço, combinações com o cliente, observações importantes..."
+              className={`p-3 rounded border w-full resize-y ${
+                isDark ? "bg-[#181818] border-[#333]" : "bg-gray-100"
+              }`}
+              placeholder="Detalhes do serviço..."
             />
           </div>
         </div>
@@ -546,9 +551,13 @@ export default function Servicos() {
         </div>
       </form>
 
-      {/* Lista de serviços */}
+      {/* LISTA */}
       {mostrarLista && (
-        <section className="bg-[#111] border border-[#222] rounded-2xl p-6 max-w-6xl">
+        <section
+          className={`rounded-2xl p-6 max-w-6xl mt-6 border ${
+            isDark ? "bg-[#111] border-[#222]" : "bg-gray-100 border-gray-300"
+          }`}
+        >
           {loadingLista ? (
             <p>Carregando serviços...</p>
           ) : servicos.length === 0 ? (
@@ -556,7 +565,13 @@ export default function Servicos() {
           ) : (
             <table className="w-full text-sm border-collapse">
               <thead>
-                <tr className="border-b border-[#333]">
+                <tr
+                  className={`border-b ${
+                    isDark
+                      ? "border-[#333] text-white"
+                      : "border-gray-400 text-black"
+                  }`}
+                >
                   <th className="py-2 px-2 text-left">ID</th>
                   <th className="py-2 px-2 text-left">Serviço</th>
                   <th className="py-2 px-2 text-left">Cliente</th>
@@ -570,9 +585,17 @@ export default function Servicos() {
                   <th className="py-2 px-2 text-center">Ações</th>
                 </tr>
               </thead>
+
               <tbody>
                 {servicos.map((s) => (
-                  <tr key={s.cdServico} className="border-b border-[#222]">
+                  <tr
+                    key={s.cdServico}
+                    className={`border-b ${
+                      isDark
+                        ? "border-[#222] hover:bg-[#1a1a1a]"
+                        : "border-gray-300 hover:bg-gray-200"
+                    } transition`}
+                  >
                     <td className="py-2 px-2">{s.cdServico}</td>
                     <td className="py-2 px-2">{s.dsServico}</td>
                     <td className="py-2 px-2">{nomeCliente(s.cdCliente)}</td>
@@ -583,13 +606,15 @@ export default function Servicos() {
                     <td className="py-2 px-2">{s.dtConclusao}</td>
                     <td className="py-2 px-2">{nomePagamento(s.cdPagamento)}</td>
                     <td className="py-2 px-2">{nomeFeedback(s.cdFeedback)}</td>
-                    <td className="py-2 px-2 text-center">
+
+                    <td className="py-2 px-2 text-center space-x-2">
                       <button
                         onClick={() => handleEdit(s)}
-                        className="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-black font-semibold rounded mr-2"
+                        className="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-black font-semibold rounded"
                       >
                         Editar
                       </button>
+
                       <button
                         onClick={() => handleDelete(s.cdServico)}
                         className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white font-semibold rounded"

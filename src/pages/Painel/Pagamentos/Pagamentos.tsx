@@ -1,4 +1,5 @@
 import { useEffect, useState, FormEvent } from "react";
+import { useTheme } from "@/contexts/ThemeContext";
 
 type Pagamento = {
   cdPagamento?: number;
@@ -9,7 +10,6 @@ type Pagamento = {
 };
 
 const API_URL = "https://five63489.onrender.com/pagamento";
-
 
 const FORMAS_PAGAMENTO = [
   "Pix",
@@ -22,6 +22,9 @@ const FORMAS_PAGAMENTO = [
 const STATUS_PAGAMENTO = ["Aprovado", "Pendente", "Cancelado"];
 
 export default function Pagamentos() {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+
   const [pagamentos, setPagamentos] = useState<Pagamento[]>([]);
   const [mostrarLista, setMostrarLista] = useState(false);
   const [loadingLista, setLoadingLista] = useState(false);
@@ -34,7 +37,6 @@ export default function Pagamentos() {
     dsStatusPag: "",
   });
 
-  
   useEffect(() => {
     carregarPagamentos();
   }, []);
@@ -76,7 +78,6 @@ export default function Pagamentos() {
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
 
-    // Garante número no valor
     const valorNumero = Number(
       typeof form.vlServico1 === "string"
         ? form.vlServico1.replace(",", ".")
@@ -183,10 +184,12 @@ export default function Pagamentos() {
       {/* FORMULÁRIO */}
       <form
         onSubmit={handleSubmit}
-        className="bg-white dark:bg-[#111] border border-gray-300 dark:border-[#222] p-8 rounded-2xl shadow-lg flex flex-col gap-6 max-w-4xl"
+        className={`border rounded-2xl p-8 shadow-lg flex flex-col gap-6 max-w-4xl ${
+          isDark ? "bg-[#111] border-[#222]" : "bg-white border-gray-300"
+        }`}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Forma de Pagamento */}
+          {/* Forma de pagamento */}
           <div className="flex flex-col gap-1">
             <label className="font-semibold text-sm">Forma de pagamento</label>
             <select
@@ -194,7 +197,9 @@ export default function Pagamentos() {
               value={form.dsFormaPag}
               onChange={handleChange}
               required
-              className="p-3 rounded bg-gray-100 dark:bg-[#181818] border dark:border-[#333] text-sm"
+              className={`p-3 rounded text-sm border ${
+                isDark ? "bg-[#181818] border-[#333]" : "bg-gray-100"
+              }`}
             >
               <option value="">Selecione...</option>
               {FORMAS_PAGAMENTO.map((fp) => (
@@ -207,9 +212,7 @@ export default function Pagamentos() {
 
           {/* Valor */}
           <div className="flex flex-col gap-1">
-            <label className="font-semibold text-sm">
-              Valor do serviço (R$)
-            </label>
+            <label className="font-semibold text-sm">Valor do serviço (R$)</label>
             <input
               type="number"
               step="0.01"
@@ -217,12 +220,14 @@ export default function Pagamentos() {
               value={form.vlServico1}
               onChange={handleChange}
               required
-              className="p-3 rounded bg-gray-100 dark:bg-[#181818] border dark:border-[#333] text-sm"
-              placeholder="Ex.: 100.00"
+              placeholder="Ex.: 150.00"
+              className={`p-3 rounded text-sm border ${
+                isDark ? "bg-[#181818] border-[#333]" : "bg-gray-100"
+              }`}
             />
           </div>
 
-          {/* Data de Pagamento */}
+          {/* Data */}
           <div className="flex flex-col gap-1">
             <label className="font-semibold text-sm">Data do pagamento</label>
             <input
@@ -231,7 +236,9 @@ export default function Pagamentos() {
               value={form.dtPagamento}
               onChange={handleChange}
               required
-              className="p-3 rounded bg-gray-100 dark:bg-[#181818] border dark:border-[#333] text-sm"
+              className={`p-3 rounded text-sm border ${
+                isDark ? "bg-[#181818] border-[#333]" : "bg-gray-100"
+              }`}
             />
           </div>
 
@@ -243,7 +250,9 @@ export default function Pagamentos() {
               value={form.dsStatusPag}
               onChange={handleChange}
               required
-              className="p-3 rounded bg-gray-100 dark:bg-[#181818] border dark:border-[#333] text-sm"
+              className={`p-3 rounded text-sm border ${
+                isDark ? "bg-[#181818] border-[#333]" : "bg-gray-100"
+              }`}
             >
               <option value="">Selecione...</option>
               {STATUS_PAGAMENTO.map((s) => (
@@ -270,36 +279,51 @@ export default function Pagamentos() {
 
       {/* LISTA */}
       {mostrarLista && (
-        <section className="bg-[#111] border border-[#222] rounded-2xl p-6 max-w-6xl">
+        <section
+          className={`rounded-2xl p-6 max-w-6xl mt-6 border ${
+            isDark ? "bg-[#111] border-[#222]" : "bg-gray-100 border-gray-300"
+          }`}
+        >
           {loadingLista ? (
-            <p className="text-white text-sm">Carregando pagamentos...</p>
+            <p className={isDark ? "text-white" : "text-black"}>Carregando pagamentos...</p>
           ) : pagamentos.length === 0 ? (
-            <p className="text-white text-sm">Nenhum pagamento cadastrado.</p>
+            <p className={isDark ? "text-white" : "text-black"}>
+              Nenhum pagamento cadastrado.
+            </p>
           ) : (
             <table className="w-full text-sm border-collapse">
               <thead>
-                <tr className="border-b border-[#333] text-white">
+                <tr
+                  className={`border-b ${
+                    isDark
+                      ? "border-[#333] text-white"
+                      : "border-gray-400 text-black"
+                  }`}
+                >
                   <th className="py-2 px-2 text-left">ID</th>
-                  <th className="py-2 px-2 text-left">Forma de Pagamento</th>
+                  <th className="py-2 px-2 text-left">Forma</th>
                   <th className="py-2 px-2 text-left">Valor</th>
                   <th className="py-2 px-2 text-left">Data</th>
                   <th className="py-2 px-2 text-left">Status</th>
                   <th className="py-2 px-2 text-center">Ações</th>
                 </tr>
               </thead>
+
               <tbody>
                 {pagamentos.map((p) => (
                   <tr
                     key={p.cdPagamento}
-                    className="border-b border-[#222] hover:bg-[#1a1a1a] transition"
+                    className={`border-b ${
+                      isDark
+                        ? "border-[#222] hover:bg-[#1a1a1a]"
+                        : "border-gray-300 hover:bg-gray-200"
+                    } transition`}
                   >
-                    <td className="py-2 px-2 text-white">{p.cdPagamento}</td>
-                    <td className="py-2 px-2 text-white">{p.dsFormaPag}</td>
-                    <td className="py-2 px-2 text-white">
-                      {formatarValor(p.vlServico1)}
-                    </td>
-                    <td className="py-2 px-2 text-white">{p.dtPagamento}</td>
-                    <td className="py-2 px-2 text-white">{p.dsStatusPag}</td>
+                    <td className="py-2 px-2">{p.cdPagamento}</td>
+                    <td className="py-2 px-2">{p.dsFormaPag}</td>
+                    <td className="py-2 px-2">{formatarValor(p.vlServico1)}</td>
+                    <td className="py-2 px-2">{p.dtPagamento}</td>
+                    <td className="py-2 px-2">{p.dsStatusPag}</td>
                     <td className="py-2 px-2 text-center space-x-2">
                       <button
                         onClick={() => iniciarEdicao(p)}

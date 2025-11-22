@@ -1,4 +1,5 @@
 import { useEffect, useState, FormEvent } from "react";
+import { useTheme } from "@/contexts/ThemeContext";
 
 type Contratado = {
   cdContratado?: number;
@@ -25,8 +26,12 @@ const ESPECIALIDADES = [
 ];
 
 export default function Contratados() {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+
   const [contratados, setContratados] = useState<Contratado[]>([]);
   const [mostrarLista, setMostrarLista] = useState(false);
+  const [loadingLista, setLoadingLista] = useState(false);
   const [editandoId, setEditandoId] = useState<number | null>(null);
 
   const [form, setForm] = useState<Contratado>({
@@ -44,6 +49,7 @@ export default function Contratados() {
   }, []);
 
   async function carregarContratados() {
+    setLoadingLista(true);
     try {
       const res = await fetch(API_URL);
       if (!res.ok) return setContratados([]);
@@ -51,27 +57,17 @@ export default function Contratados() {
       setContratados(data);
     } catch {
       console.log("Erro ao carregar contratados");
+    } finally {
+      setLoadingLista(false);
     }
   }
-
-  const formatarTelefone = (valor: string) => {
-    valor = valor.replace(/\D/g, "");
-    if (valor.length <= 10) {
-      return valor
-        .replace(/^(\d{2})(\d)/g, "($1) $2")
-        .replace(/(\d{4})(\d)/, "$1-$2");
-    } else {
-      return valor
-        .replace(/^(\d{2})(\d)/g, "($1) $2")
-        .replace(/(\d{5})(\d)/, "$1-$2");
-    }
-  };
 
   function handleChange(e: any) {
     const { name, value } = e.target;
 
     if (name === "nmTelefone") {
-      setForm((prev) => ({ ...prev, nmTelefone: formatarTelefone(value) }));
+      const somenteNumeros = value.replace(/\D/g, "");
+      setForm((prev) => ({ ...prev, nmTelefone: somenteNumeros }));
       return;
     }
 
@@ -98,6 +94,16 @@ export default function Contratados() {
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
+
+    if (form.nmTelefone.length !== 11) {
+      alert("Telefone deve conter exatamente 11 números (DD + número).");
+      return;
+    }
+
+    if (form.nmCnpj.length === 0 || !/^\d+$/.test(form.nmCnpj)) {
+      alert("Informe um CNPJ válido (apenas números).");
+      return;
+    }
 
     const metodo = editandoId ? "PUT" : "POST";
     const url = editandoId ? `${API_URL}/${editandoId}` : API_URL;
@@ -148,22 +154,28 @@ export default function Contratados() {
   return (
     <main className="p-8 flex flex-col gap-8">
 
-      {/* Título + botão listar */}
+      {/* TÍTULO */}
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-[#ff6600]">Contratados</h1>
 
         <button
-          onClick={() => setMostrarLista(!mostrarLista)}
+          onClick={() => {
+            const novo = !mostrarLista;
+            setMostrarLista(novo);
+            if (novo) carregarContratados();
+          }}
           className="bg-[#ff6600] text-black font-semibold px-4 py-2 rounded-md hover:bg-[#ff8533] transition"
         >
           {mostrarLista ? "Ocultar Lista" : "Listar Contratados"}
         </button>
       </div>
 
-      {/* Formulário */}
+      {/* FORMULÁRIO */}
       <form
         onSubmit={handleSubmit}
-        className="bg-white dark:bg-[#111] border border-gray-300 dark:border-[#222] p-8 rounded-2xl shadow-lg flex flex-col gap-6 max-w-5xl"
+        className={`border rounded-2xl p-8 shadow-lg flex flex-col gap-6 max-w-5xl ${
+          isDark ? "bg-[#111] border-[#222]" : "bg-white border-gray-300"
+        }`}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
@@ -174,7 +186,10 @@ export default function Contratados() {
               value={form.dsNome}
               onChange={handleChange}
               required
-              className="p-3 rounded bg-gray-100 dark:bg-[#181818] border dark:border-[#333]"
+              placeholder="Ex: Construtora Alfa"
+              className={`p-3 rounded border ${
+                isDark ? "bg-[#181818] border-[#333]" : "bg-gray-100"
+              }`}
             />
           </div>
 
@@ -186,7 +201,10 @@ export default function Contratados() {
               onChange={handleChange}
               required
               maxLength={14}
-              className="p-3 rounded bg-gray-100 dark:bg-[#181818] border dark:border-[#333]"
+              placeholder="Ex: 12345678000199"
+              className={`p-3 rounded border ${
+                isDark ? "bg-[#181818] border-[#333]" : "bg-gray-100"
+              }`}
             />
           </div>
 
@@ -197,7 +215,11 @@ export default function Contratados() {
               value={form.nmTelefone}
               onChange={handleChange}
               required
-              className="p-3 rounded bg-gray-100 dark:bg-[#181818] border dark:border-[#333]"
+              placeholder="Ex: 11987654321"
+              maxLength={11}
+              className={`p-3 rounded border ${
+                isDark ? "bg-[#181818] border-[#333]" : "bg-gray-100"
+              }`}
             />
           </div>
 
@@ -208,7 +230,9 @@ export default function Contratados() {
               value={form.dsRegiao}
               onChange={handleChange}
               required
-              className="p-3 rounded bg-gray-100 dark:bg-[#181818] border dark:border-[#333]"
+              className={`p-3 rounded border ${
+                isDark ? "bg-[#181818] border-[#333]" : "bg-gray-100"
+              }`}
             >
               <option value="">Selecione...</option>
               {REGIOES.map((r) => (
@@ -224,7 +248,9 @@ export default function Contratados() {
               value={form.dsCidade}
               onChange={handleChange}
               required
-              className="p-3 rounded bg-gray-100 dark:bg-[#181818] border dark:border-[#333]"
+              className={`p-3 rounded border ${
+                isDark ? "bg-[#181818] border-[#333]" : "bg-gray-100"
+              }`}
             >
               <option value="">Selecione...</option>
               {CIDADES.map((c) => (
@@ -240,7 +266,9 @@ export default function Contratados() {
               value={form.dsEspecialidade}
               onChange={handleChange}
               required
-              className="p-3 rounded bg-gray-100 dark:bg-[#181818] border dark:border-[#333]"
+              className={`p-3 rounded border ${
+                isDark ? "bg-[#181818] border-[#333]" : "bg-gray-100"
+              }`}
             >
               <option value="">Selecione...</option>
               {ESPECIALIDADES.map((e) => (
@@ -256,7 +284,9 @@ export default function Contratados() {
               value={form.dsEstrelas}
               onChange={handleChange}
               required
-              className="p-3 rounded bg-gray-100 dark:bg-[#181818] border dark:border-[#333]"
+              className={`p-3 rounded border ${
+                isDark ? "bg-[#181818] border-[#333]" : "bg-gray-100"
+              }`}
             >
               {[0, 1, 2, 3, 4, 5].map((n) => (
                 <option key={n} value={n}>
@@ -265,10 +295,8 @@ export default function Contratados() {
               ))}
             </select>
           </div>
-
         </div>
 
-        {/* Botão salvar */}
         <button
           type="submit"
           className={`w-full text-white font-bold py-3 rounded-lg mt-4 transition ${
@@ -281,15 +309,23 @@ export default function Contratados() {
         </button>
       </form>
 
-      {/* Lista */}
+      {/* LISTA */}
       {mostrarLista && (
-        <section className="bg-[#111] border border-[#222] rounded-2xl p-6 max-w-6xl mt-6">
-          {contratados.length === 0 ? (
-            <p className="text-white">Nenhum contratado encontrado.</p>
+        <section
+          className={`rounded-2xl p-6 max-w-6xl mt-6 border ${
+            isDark ? "bg-[#111] border-[#222]" : "bg-gray-100 border-gray-300"
+          }`}
+        >
+          {loadingLista ? (
+            <p className={isDark ? "text-white" : "text-black"}>Carregando contratados...</p>
+          ) : contratados.length === 0 ? (
+            <p className={isDark ? "text-white" : "text-black"}>Nenhum contratado encontrado.</p>
           ) : (
             <table className="w-full text-sm border-collapse">
               <thead>
-                <tr className="border-b border-[#333] text-white">
+                <tr className={`border-b ${
+                  isDark ? "border-[#333] text-white" : "border-gray-400 text-black"
+                }`}>
                   <th className="py-2 px-2">ID</th>
                   <th className="py-2 px-2">Empresa</th>
                   <th className="py-2 px-2">CNPJ</th>
@@ -304,18 +340,17 @@ export default function Contratados() {
 
               <tbody>
                 {contratados.map((c) => (
-                  <tr
-                    key={c.cdContratado}
-                    className="border-b border-[#222] hover:bg-[#1a1a1a] transition"
-                  >
-                    <td className="py-2 px-2 text-white">{c.cdContratado}</td>
-                    <td className="py-2 px-2 text-white">{c.dsNome}</td>
-                    <td className="py-2 px-2 text-white">{c.nmCnpj}</td>
-                    <td className="py-2 px-2 text-white">{c.nmTelefone}</td>
-                    <td className="py-2 px-2 text-white">{c.dsRegiao}</td>
-                    <td className="py-2 px-2 text-white">{c.dsCidade}</td>
-                    <td className="py-2 px-2 text-white">{c.dsEspecialidade}</td>
-                    <td className="py-2 px-2 text-white">{c.dsEstrelas}</td>
+                  <tr key={c.cdContratado} className={`border-b ${
+                    isDark ? "border-[#222] hover:bg-[#1a1a1a]" : "border-gray-300 hover:bg-gray-200"
+                  }`}>
+                    <td className="py-2 px-2">{c.cdContratado}</td>
+                    <td className="py-2 px-2">{c.dsNome}</td>
+                    <td className="py-2 px-2">{c.nmCnpj}</td>
+                    <td className="py-2 px-2">{c.nmTelefone}</td>
+                    <td className="py-2 px-2">{c.dsRegiao}</td>
+                    <td className="py-2 px-2">{c.dsCidade}</td>
+                    <td className="py-2 px-2">{c.dsEspecialidade}</td>
+                    <td className="py-2 px-2">{c.dsEstrelas}</td>
 
                     <td className="py-2 px-2 text-center space-x-2">
                       <button
@@ -335,12 +370,10 @@ export default function Contratados() {
                   </tr>
                 ))}
               </tbody>
-
             </table>
           )}
         </section>
       )}
-
     </main>
   );
 }

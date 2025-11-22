@@ -22,7 +22,6 @@ type ThemeProviderProps = {
 export function ThemeProvider({ children }: ThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>("dark");
 
-  // Aplica a classe "dark" no <html> pro Tailwind funcionar
   useEffect(() => {
     const root = document.documentElement;
     if (theme === "dark") {

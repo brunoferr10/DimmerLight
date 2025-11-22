@@ -1,4 +1,5 @@
 import { useEffect, useState, FormEvent } from "react";
+import { useTheme } from "@/contexts/ThemeContext";
 
 type Seguro = {
   cdApolice?: number;
@@ -17,7 +18,6 @@ type Servico = {
 const API_SEGURO = "https://five63489.onrender.com/seguro";
 const API_SERVICO = "https://five63489.onrender.com/servico";
 
-
 const PLANOS = [
   "Plano Residencial",
   "Plano Empresarial",
@@ -28,6 +28,9 @@ const PLANOS = [
 const SITUACOES = ["Ativo", "Pendente", "Cancelado"];
 
 export default function Seguros() {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+
   const [seguros, setSeguros] = useState<Seguro[]>([]);
   const [servicos, setServicos] = useState<Servico[]>([]);
   const [mostrarLista, setMostrarLista] = useState(false);
@@ -42,7 +45,6 @@ export default function Seguros() {
     cdServico: "",
   });
 
-  
   useEffect(() => {
     carregarSeguros();
     carregarServicos();
@@ -71,7 +73,9 @@ export default function Seguros() {
   }
 
   function handleChange(
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
   ) {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -185,7 +189,9 @@ export default function Seguros() {
       {/* FORMULÁRIO */}
       <form
         onSubmit={handleSubmit}
-        className="bg-white dark:bg-[#111] border border-gray-300 dark:border-[#222] p-8 rounded-2xl shadow-lg flex flex-col gap-6 max-w-5xl"
+        className={`border p-8 rounded-2xl shadow-lg flex flex-col gap-6 max-w-5xl ${
+          isDark ? "bg-[#111] border-[#222]" : "bg-white border-gray-300"
+        }`}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
@@ -197,7 +203,9 @@ export default function Seguros() {
               value={form.dsPlano}
               onChange={handleChange}
               required
-              className="p-3 rounded bg-gray-100 dark:bg-[#181818] border dark:border-[#333]"
+              className={`p-3 rounded border ${
+                isDark ? "bg-[#181818] border-[#333]" : "bg-gray-100"
+              }`}
             >
               <option value="">Selecione...</option>
               {PLANOS.map((p) => (
@@ -218,7 +226,9 @@ export default function Seguros() {
               value={form.vlCobertura}
               onChange={handleChange}
               required
-              className="p-3 rounded bg-gray-100 dark:bg-[#181818] border dark:border-[#333]"
+              className={`p-3 rounded border ${
+                isDark ? "bg-[#181818] border-[#333]" : "bg-gray-100"
+              }`}
             />
           </div>
 
@@ -230,7 +240,9 @@ export default function Seguros() {
               value={form.dsSituacao}
               onChange={handleChange}
               required
-              className="p-3 rounded bg-gray-100 dark:bg-[#181818] border dark:border-[#333]"
+              className={`p-3 rounded border ${
+                isDark ? "bg-[#181818] border-[#333]" : "bg-gray-100"
+              }`}
             >
               <option value="">Selecione...</option>
               {SITUACOES.map((s) => (
@@ -249,7 +261,9 @@ export default function Seguros() {
               value={form.cdServico}
               onChange={handleChange}
               required
-              className="p-3 rounded bg-gray-100 dark:bg-[#181818] border dark:border-[#333]"
+              className={`p-3 rounded border ${
+                isDark ? "bg-[#181818] border-[#333]" : "bg-gray-100"
+              }`}
             >
               <option value="">Selecione...</option>
               {servicos.map((s) => (
@@ -261,7 +275,7 @@ export default function Seguros() {
           </div>
         </div>
 
-        {/* Cobertura Descritiva */}
+        {/* Descrição da cobertura */}
         <div className="flex flex-col gap-1">
           <label className="font-semibold text-sm">Descrição da Cobertura</label>
           <textarea
@@ -270,7 +284,9 @@ export default function Seguros() {
             onChange={handleChange}
             required
             rows={3}
-            className="p-3 rounded bg-gray-100 dark:bg-[#181818] border dark:border-[#333]"
+            className={`p-3 rounded border ${
+              isDark ? "bg-[#181818] border-[#333]" : "bg-gray-100"
+            }`}
           />
         </div>
 
@@ -289,15 +305,29 @@ export default function Seguros() {
 
       {/* LISTA */}
       {mostrarLista && (
-        <section className="bg-[#111] border border-[#222] rounded-2xl p-6 max-w-6xl">
+        <section
+          className={`rounded-2xl p-6 max-w-6xl border ${
+            isDark ? "bg-[#111] border-[#222]" : "bg-gray-100 border-gray-300"
+          }`}
+        >
           {loadingLista ? (
-            <p className="text-white text-sm">Carregando seguros...</p>
+            <p className={isDark ? "text-white" : "text-black"}>
+              Carregando seguros...
+            </p>
           ) : seguros.length === 0 ? (
-            <p className="text-white text-sm">Nenhum seguro cadastrado.</p>
+            <p className={isDark ? "text-white" : "text-black"}>
+              Nenhum seguro cadastrado.
+            </p>
           ) : (
             <table className="w-full text-sm border-collapse">
               <thead>
-                <tr className="border-b border-[#333] text-white">
+                <tr
+                  className={`border-b ${
+                    isDark
+                      ? "border-[#333] text-white"
+                      : "border-gray-400 text-black"
+                  }`}
+                >
                   <th className="py-2 px-2 text-left">Apolice</th>
                   <th className="py-2 px-2 text-left">Plano</th>
                   <th className="py-2 px-2 text-left">Cobertura (R$)</th>
@@ -311,15 +341,19 @@ export default function Seguros() {
                 {seguros.map((s) => (
                   <tr
                     key={s.cdApolice}
-                    className="border-b border-[#222] hover:bg-[#1a1a1a] transition"
+                    className={`border-b ${
+                      isDark
+                        ? "border-[#222] hover:bg-[#1a1a1a]"
+                        : "border-gray-300 hover:bg-gray-200"
+                    } transition`}
                   >
-                    <td className="py-2 px-2 text-white">{s.cdApolice}</td>
-                    <td className="py-2 px-2 text-white">{s.dsPlano}</td>
-                    <td className="py-2 px-2 text-white">
+                    <td className="py-2 px-2">{s.cdApolice}</td>
+                    <td className="py-2 px-2">{s.dsPlano}</td>
+                    <td className="py-2 px-2">
                       R$ {Number(s.vlCobertura).toFixed(2).replace(".", ",")}
                     </td>
-                    <td className="py-2 px-2 text-white">{s.dsSituacao}</td>
-                    <td className="py-2 px-2 text-white">{nomeServico(s.cdServico)}</td>
+                    <td className="py-2 px-2">{s.dsSituacao}</td>
+                    <td className="py-2 px-2">{nomeServico(s.cdServico)}</td>
 
                     <td className="py-2 px-2 text-center space-x-2">
                       <button
