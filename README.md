@@ -56,59 +56,73 @@ Login padrão para testes:
 
 ARRUMAI-FRONTEND/
 │
-├── src/ # Código-fonte principal
-│ ├── assets/ # Imagens e ícones do projeto
-│ │ ├── Bruno.jpeg # Foto integrante 1
-│ │ ├── Gabriel.jpeg # Foto integrante 2
-│ │ ├── leo.jpeg # Foto integrante 3
-│ │ ├── logo.jpeg # Logotipo do projeto
-│ │ └── fotoHome.jpeg # Imagem tela home
+├── src/                     # Código-fonte principal
 │ │
-│ ├── components/ # Componentes reutilizáveis
+│ ├── assets/                # Imagens e ícones do projeto
+│ │ ├── Bruno.jpeg
+│ │ ├── Gabriel.jpeg
+│ │ ├── leonardo.jpeg
+│ │ ├── logo.jpeg
+│ │ └── fotoHome.jpeg
+│ │
+│ ├── components/            # Componentes reutilizáveis
 │ │ ├── Header.tsx
-│ │ ├── Footer.tsx
 │ │ ├── HeaderPainel.tsx
+│ │ ├── Footer.tsx
 │ │ ├── ThemeSwitch.tsx
 │ │ └── PrivateRoute.tsx
 │ │
-│ ├── pages/ # Páginas principais do projeto
-│ │ ├── login/ # Página de login (acesso inicial)
+│ ├── contexts/              # Contextos globais da aplicação
+│ │ ├── AuthContext.tsx      # Autenticação + login
+│ │ └── ThemeContext.tsx     # Tema (dark/light)
+│ │
+│ ├── pages/                 # Páginas principais
+│ │ ├── Home/                # Página inicial (Landing Page)
+│ │ │ └── Home.tsx
+│ │ │
+│ │ ├── Integrantes/
+│ │ │ └── Integrantes.tsx
+│ │ │
+│ │ ├── Sobre/
+│ │ │ └── Sobre.tsx
+│ │ │
+│ │ ├── FAQ/
+│ │ │ └── FAQ.tsx
+│ │ │
+│ │ ├── Contato/
+│ │ │ └── Contato.tsx
+│ │ │
+│ │ ├── Login/
 │ │ │ └── Login.tsx
 │ │ │
-│ │ ├── painel/ # Painel do sistema (área restrita)
-│ │ │ ├── clientes/ # CRUD Clientes
+│ │ ├── Painel/              # Área logada com CRUDs integrados à API
+│ │ │ ├── PainelLayout.tsx
+│ │ │ ├── HomePainel.tsx
+│ │ │ ├── Clientes/
 │ │ │ │ └── Clientes.tsx
-│ │ │ ├── contratados/ # CRUD Profissionais
-│ │ │ │ └── Contratados.tsx
-│ │ │ ├── feedback/ # CRUD Feedbacks
-│ │ │ │ └── FeedbackPage.tsx
-│ │ │ ├── pagamentos/ # CRUD Pagamentos
-│ │ │ │ └── Pagamentos.tsx
-│ │ │ ├── seguros/ # CRUD Seguros
-│ │ │ │ └── Seguros.tsx
-│ │ │ ├── servicos/ # CRUD Serviços (tabela principal)
+│ │ │ ├── Servicos/
 │ │ │ │ └── Servicos.tsx
-│ │ │ ├── HomePainel.tsx # Página inicial do painel
-│ │ │ ├── PainelLayout.tsx # Layout base do painel
-│ │ │ └── PainelPage.tsx # Gerenciador das rotas internas
-│ │ │
-│ │ ├── Home.tsx # Página inicial (landing page)
-│ │ ├── FAQ.tsx # Perguntas frequentes
-│ │ ├── Contato.tsx # Página de contato
-│ │ ├── Integrantes.tsx # Lista de integrantes
-│ │ └── IntegranteDetalhe.tsx# Detalhes dos integrantes
+│ │ │ ├── Contratados/
+│ │ │ │ └── Contratados.tsx
+│ │ │ ├── Pagamentos/
+│ │ │ │ └── Pagamentos.tsx
+│ │ │ ├── Seguros/
+│ │ │ │ └── Seguros.tsx
+│ │ │ └── Feedback/
+│ │ │    └── Feedback.tsx
 │ │
-│ ├── App.tsx # Estrutura principal da aplicação
-│ ├── main.tsx # Ponto de entrada do React
-│ ├── index.css # Estilos globais
-│ └── vite-env.d.ts # Tipagem do ambiente Vite
+│ ├── App.tsx                # Estrutura principal do React Router
+│ ├── main.tsx               # Ponto de entrada da aplicação
+│ ├── index.css              # Estilos globais
+│ └── vite-env.d.ts          # Tipagem Vite
 │
-├── package.json # Dependências do projeto
-├── tsconfig.json # Configuração do TypeScript
-├── tailwind.config.js # Configuração do TailwindCSS
-├── vite.config.ts # Configuração do Vite
-├── .gitignore # Ignora node_modules e arquivos desnecessários
-└── README.md # Este arquivo
+├── package.json
+├── tsconfig.json
+├── tailwind.config.js
+├── vite.config.ts
+├── .gitignore
+└── README.md                # Este arquivo
+
 ---
 
 ##  Links Importantes

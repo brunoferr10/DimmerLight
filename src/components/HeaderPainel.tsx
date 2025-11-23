@@ -1,13 +1,14 @@
+import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import Logo from "../assets/logo.jpeg";
 import ThemeSwitch from "./ThemeSwitch";
+import { Menu, X } from "lucide-react";
 
 export default function HeaderPainel() {
+  const [open, setOpen] = useState(false);
 
-  const handleLogout = () => {
-    localStorage.removeItem("usuario");
-    window.location.href = "/login";
-  };
+  const toggleMenu = () => setOpen(!open);
+  const closeMenu = () => setOpen(false);
 
   const links = [
     { to: "/painel/clientes", label: "Clientes" },
@@ -18,53 +19,94 @@ export default function HeaderPainel() {
     { to: "/painel/feedback", label: "Feedback" },
   ];
 
+  const handleLogout = () => {
+    localStorage.removeItem("usuario");
+    window.location.href = "/login";
+  };
+
   return (
-    <aside className="fixed left-0 top-0 h-full w-60 bg-[#0d0d0d] text-[#f5f5f5] flex flex-col shadow-2xl border-r border-[#1f1f1f] z-50">
+    <>
+      {/* BOTÃO MOBILE */}
+      <button
+        onClick={toggleMenu}
+        className="lg:hidden fixed top-4 left-4 z-[60] bg-[#ff6600] p-2 rounded-lg shadow-lg"
+      >
+        <Menu size={26} className="text-black" />
+      </button>
 
-      {/* LOGO */}
-      <div className="flex flex-col items-center pt-6 pb-8 gap-2">
-        <img
-          src={Logo}
-          className="w-28 h-28 object-cover rounded-full border-2 border-[#ff6600] shadow-lg"
+      {/* OVERLAY MOBILE */}
+      {open && (
+        <div
+          onClick={closeMenu}
+          className="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
         />
-        <h1 className="text-lg font-bold tracking-wide">
-          <span className="text-[#ff6600]">ARRUM</span>AI
-        </h1>
-      </div>
+      )}
 
-      {/* LINKS */}
-      <nav className="flex-1 flex flex-col gap-2 px-4">
-        {links.map((l) => (
-          <NavLink
-            key={l.to}
-            to={l.to}
-            className={({ isActive }) =>
-              `px-4 py-2 text-sm font-medium rounded-lg transition ${
-                isActive
-                  ? "bg-[#ff6600] text-black"
-                  : "hover:bg-[#1f1f1f] hover:text-[#ff6600]"
-              }`
-            }
+      {/* SIDEBAR */}
+      <aside
+        className={`
+          fixed top-0 left-0 h-full bg-[#0d0d0d] text-white 
+          shadow-2xl border-r border-[#1f1f1f] 
+          flex flex-col z-50 transition-all duration-300
+
+          ${open ? "translate-x-0 w-60" : "-translate-x-full w-60"}
+          lg:translate-x-0 lg:w-60
+        `}
+      >
+
+        {/* TOPO / LOGO */}
+        <div className="flex flex-col items-center py-6 gap-3">
+
+          {/* BOTÃO FECHAR MOBILE */}
+          <button
+            onClick={closeMenu}
+            className="lg:hidden text-white hover:bg-[#222] p-2 rounded-lg"
           >
-            {l.label}
-          </NavLink>
-        ))}
-      </nav>
+            <X size={26} />
+          </button>
 
-      {/* ÁREA INFERIOR FIXA */}
-      <div className="p-4 border-t border-[#1f1f1f] flex flex-col items-center gap-4">
+          <img
+            src={Logo}
+            className="w-24 h-24 object-cover rounded-full border-2 border-[#ff6600] shadow-lg"
+          />
 
-        {/* Botão Sair */}
-        <button
-          onClick={handleLogout}
-          className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded-lg"
-        >
-          Sair
-        </button>
+          <h1 className="text-lg font-bold tracking-wide">
+            <span className="text-[#ff6600]">ARRUM</span>AI
+          </h1>
+        </div>
 
-        {/* Botão de Tema */}
-        <ThemeSwitch />
-      </div>
-    </aside>
+        {/* LINKS */}
+        <nav className="flex-1 px-4 mt-2 space-y-1">
+          {links.map((l) => (
+            <NavLink
+              key={l.to}
+              to={l.to}
+              onClick={closeMenu}
+              className={({ isActive }) =>
+                `px-4 py-2 rounded-lg font-medium block transition ${
+                  isActive
+                    ? "bg-[#ff6600] text-black"
+                    : "hover:bg-[#1f1f1f] hover:text-[#ff6600]"
+                }`
+              }
+            >
+              {l.label}
+            </NavLink>
+          ))}
+        </nav>
+
+        {/* RODAPÉ */}
+        <div className="p-4 border-t border-[#1f1f1f] flex flex-col items-center gap-4">
+          <button
+            onClick={handleLogout}
+            className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded-lg transition"
+          >
+            Sair
+          </button>
+
+          <ThemeSwitch />
+        </div>
+      </aside>
+    </>
   );
 }

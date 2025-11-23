@@ -13,51 +13,45 @@ export default function Home() {
 
   return (
     <section
-      className={`h-[calc(100vh-60px)] w-full flex items-center justify-center px-10 transition-all duration-500 overflow-hidden ${
+      className={`min-h-screen w-full flex flex-col lg:flex-row items-center justify-center px-6 lg:px-16 transition-all duration-500 ${
         isDark ? "bg-[#0b0b0b] text-white" : "bg-[#ffffff] text-gray-900"
       }`}
     >
-      <div className="w-full max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-10">
-        {/* Texto principal */}
-        <div className="flex-1">
-          <h1 className="text-4xl md:text-5xl font-extrabold mb-6 leading-tight">
+      {/* CONTAINER GERAL */}
+      <div className="w-full max-w-6xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-10 py-20">
+
+        {/* TEXTO */}
+        <div className="flex-1 text-center lg:text-left px-2 lg:px-0">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-6 leading-tight">
             <span className="text-[#ff6600]">Construa</span> com confiança.
             <br />
             Reformas e serviços <br /> de forma inteligente.
           </h1>
 
           <p className="text-base md:text-lg leading-relaxed text-gray-400 mb-6">
-            O <span className="text-[#ff6600] font-semibold">ArrumAi</span> é a
-            plataforma que conecta clientes a profissionais de obras, reformas e
-            serviços gerais — com total transparência, acompanhamento e
-            segurança. Nossa missão é simplificar o processo de contratação,
-            garantindo qualidade e praticidade do início ao fim da obra.
+            O <span className="text-[#ff6600] font-semibold">ArrumAi</span>{" "}
+            conecta clientes a profissionais de obras com transparência e
+            segurança.
           </p>
 
           <p className="text-base md:text-lg leading-relaxed text-gray-400 mb-8">
-            Seja uma pequena reforma, um serviço de acabamento ou uma obra
-            completa — no ArrumAi você encontra os melhores profissionais
-            avaliados, com orçamentos rápidos e suporte dedicado em todas as
-            etapas.
+            Profissionais avaliados, suporte dedicado e orçamentos rápidos.
           </p>
 
-          {/* Botão único */}
-          <div>
-            <button
-              onClick={handleSaibaMais}
-              className="border border-[#ff6600] hover:bg-[#ff6600] hover:text-white text-[#ff6600] font-semibold py-3 px-6 rounded-lg transition-all shadow-md hover:shadow-lg"
-            >
-              Saiba Mais
-            </button>
-          </div>
+          <button
+            onClick={handleSaibaMais}
+            className="border border-[#ff6600] hover:bg-[#ff6600] hover:text-white text-[#ff6600] font-semibold py-3 px-6 rounded-lg transition-all shadow-md hover:shadow-lg"
+          >
+            Saiba Mais
+          </button>
         </div>
 
-        {/* Imagem */}
-        <div className="flex-1 flex justify-center">
+        {/* IMAGEM */}
+        <div className="flex-1 flex justify-center mt-8 lg:mt-0">
           <img
             src={fotoHome}
             alt="Profissional de obras"
-            className="rounded-2xl shadow-xl border border-[#2a2a2a] w-[420px] md:w-[520px] object-cover"
+            className="rounded-2xl shadow-xl border border-[#2a2a2a] w-[300px] sm:w-[380px] md:w-[480px] lg:w-[520px] object-cover"
           />
         </div>
       </div>

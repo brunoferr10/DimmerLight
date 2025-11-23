@@ -1,4 +1,3 @@
-// App.tsx
 import { Routes, Route, useLocation } from "react-router-dom";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -25,6 +24,7 @@ export default function App() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const location = useLocation();
+
   const isPainel = location.pathname.startsWith("/painel");
 
   return (
@@ -33,11 +33,11 @@ export default function App() {
         isDark ? "bg-[#050505] text-white" : "bg-slate-50 text-slate-900"
       }`}
     >
+
       {!isPainel && <Header />}
 
-      <main className={!isPainel ? "ml-60 flex flex-col min-h-screen" : ""}>
+      <main className={!isPainel ? "lg:ml-60 flex flex-col min-h-screen" : ""}>
         <Routes>
-
           {/* SITE */}
           <Route path="/" element={<Home />} />
           <Route path="/integrantes" element={<Integrantes />} />
@@ -46,7 +46,7 @@ export default function App() {
           <Route path="/contato" element={<Contato />} />
           <Route path="/login" element={<Login />} />
 
-          {/* PAINEL COM ROTAS INTERNAS */}
+          {/* PAINEL */}
           <Route path="/painel" element={<PainelLayout />}>
             <Route index element={<HomePainel />} />
             <Route path="clientes" element={<Clientes />} />
@@ -56,7 +56,6 @@ export default function App() {
             <Route path="seguros" element={<Seguros />} />
             <Route path="feedback" element={<Feedback />} />
           </Route>
-
         </Routes>
       </main>
 

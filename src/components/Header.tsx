@@ -1,61 +1,110 @@
 import { NavLink, Link } from "react-router-dom";
 import ThemeSwitch from "./ThemeSwitch";
 import Logo from "@/assets/logo.jpeg";
+import { Menu, X } from "lucide-react";
+import { useState } from "react";
 
 export default function Header() {
+  const [open, setOpen] = useState(false);
+
+  const toggleMenu = () => setOpen(!open);
+  const closeMenu = () => setOpen(false);
+
+  const itens = [
+    { path: "/", label: "Home" },
+    { path: "/integrantes", label: "Integrantes" },
+    { path: "/sobre", label: "Sobre" },
+    { path: "/faq", label: "FAQ" },
+    { path: "/contato", label: "Contato" },
+  ];
+
   const linkBase =
     "flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition";
 
   return (
-    <aside className="fixed left-0 top-0 h-full w-60 bg-[#0d0d0d] text-[#f5f5f5] flex flex-col justify-between shadow-2xl border-r border-[#1f1f1f] z-50">
-      {/* LOGO */}
-      <div className="flex flex-col items-center py-6 gap-2">
-        <img
-          src={Logo}
-          alt="ArrumAi"
-          className="w-28 h-28 object-cover rounded-full border-2 border-[#ff6600] shadow-lg"
+    <>
+      {/* BOTÃO MOBILE */}
+      <button
+        onClick={toggleMenu}
+        className="lg:hidden fixed top-4 left-4 z-[60] bg-[#ff6600] p-2 rounded-lg shadow-lg"
+      >
+        <Menu size={25} className="text-black" />
+      </button>
+
+      {/* OVERLAY MOBILE */}
+      {open && (
+        <div
+          onClick={closeMenu}
+          className="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
         />
-        <h1 className="text-lg font-bold mt-2 tracking-wide">
-          <span className="text-[#ff6600]">ARRUM</span>
-          <span className="text-white">AI</span>
-        </h1>
-      </div>
+      )}
 
-      {/* NAVEGAÇÃO */}
-      <nav className="flex-1 px-4 mt-4 space-y-2">
-        {[
-          { path: "/", label: "Home" },
-          { path: "/integrantes", label: "Integrantes" },
-          { path: "/sobre", label: "Sobre" },
-          { path: "/faq", label: "FAQ" },
-          { path: "/contato", label: "Contato" },
-        ].map((item) => (
-          <NavLink
-            key={item.path}
-            to={item.path}
-            className={({ isActive }) =>
-              `${linkBase} ${
-                isActive
-                  ? "bg-[#ff6600] text-black"
-                  : "hover:bg-[#1f1f1f] hover:text-[#ff6600]"
-              }`
-            }
+      {/* SIDEBAR */}
+      <aside
+        className={`
+          fixed top-0 left-0 h-full bg-[#0d0d0d] 
+          text-white shadow-2xl border-r border-[#1f1f1f] 
+          flex flex-col z-50 transition-all duration-300
+
+          ${open ? "translate-x-0 w-60" : "-translate-x-full w-60"}
+          lg:translate-x-0 lg:w-60
+        `}
+      >
+        {/* TOPO */}
+        <div className="flex flex-col items-center py-6 gap-3">
+
+          {/* Botão fechar (mobile) */}
+          <button
+            onClick={closeMenu}
+            className="lg:hidden text-white hover:bg-[#222] p-2 rounded-lg"
           >
-            {item.label}
-          </NavLink>
-        ))}
-      </nav>
+            <X size={26} />
+          </button>
 
-      {/* BOTÃO DE LOGIN E TEMA */}
-      <div className="p-4 border-t border-[#1f1f1f] flex flex-col gap-3 items-center">
-        <Link
-          to="/login"
-          className="w-full text-center bg-[#ff6600] text-black py-2 font-semibold rounded-lg hover:bg-[#ff8533] transition-all duration-300 shadow-md"
-        >
-          Login
-        </Link>
-        <ThemeSwitch />
-      </div>
-    </aside>
+          {/* LOGO */}
+          <img
+            src={Logo}
+            alt="ArrumAi"
+            className="w-24 h-24 object-cover rounded-full border-2 border-[#ff6600] shadow-lg"
+          />
+
+          <h1 className="text-lg font-bold tracking-wide">
+            <span className="text-[#ff6600]">ARRUM</span>AI
+          </h1>
+        </div>
+
+        {/* LINKS */}
+        <nav className="flex-1 px-4 mt-2 space-y-1">
+          {itens.map((item) => (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              onClick={closeMenu}
+              className={({ isActive }) =>
+                `${linkBase} ${
+                  isActive
+                    ? "bg-[#ff6600] text-black"
+                    : "hover:bg-[#1f1f1f] hover:text-[#ff6600]"
+                }`
+              }
+            >
+              {item.label}
+            </NavLink>
+          ))}
+        </nav>
+
+        {/* LOGIN / THEME */}
+        <div className="p-4 border-t border-[#1f1f1f] flex flex-col gap-3 items-center">
+          <Link
+            to="/login"
+            onClick={closeMenu}
+            className="w-full bg-[#ff6600] text-black py-2 rounded-lg font-semibold text-center hover:bg-[#ff8533] transition"
+          >
+            Login
+          </Link>
+          <ThemeSwitch />
+        </div>
+      </aside>
+    </>
   );
 }
