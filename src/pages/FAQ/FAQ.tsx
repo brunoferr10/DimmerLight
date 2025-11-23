@@ -7,7 +7,7 @@ export default function FAQ() {
   const faqs = [
     {
       q: "O ArrumAi é um sistema real ou apenas acadêmico?",
-      a: "O ArrumAi foi desenvolvido como um projeto acadêmico, mas com estrutura e funcionalidades que simulam um aplicativo real do mercado.",
+      a: "O ArrumAi nasceu como um projeto acadêmico, mas foi estruturado desde o início com arquitetura, usabilidade e integração de nível profissional. A plataforma está em evolução contínua e tem como objetivo se tornar uma solução real do mercado, com foco em escala, segurança e modelo de negócio sustentável — preparando o terreno para futura captação de investidores e expansão operacional.",
     },
     {
       q: "Qual é o principal objetivo do ArrumAi?",
