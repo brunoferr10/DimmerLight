@@ -1,71 +1,82 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import { useNavigate } from "react-router-dom"; // 👈 necessário para redirecionar
+import { useNavigate } from "react-router-dom";
 
 type User = {
+  id: number;
   name: string;
   email: string;
-  role: "admin" | "montador"; // 🔥 dois perfis disponíveis
+  role: "admin" | "montador";
 };
 
 type AuthContextValue = {
   user: User | null;
   isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<boolean>;
+  login: (email: string, password: string) => Promise<{ ok: boolean; msg: string }>;
   logout: () => void;
 };
 
-// CONTEXTO
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-// 🔐 STORAGE KEY
+// 🔐 STORAGE
 const STORAGE_KEY = "dimmer-user-login";
+
+// 🌎 URL do seu backend Oracle
+const API_URL = "http://localhost:8080/login/auth";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const navigate = useNavigate(); // 👈 agora o logout navega corretamente
+  const navigate = useNavigate();
 
   const isAuthenticated = !!user;
 
-  // LOGIN COM PERMISSÕES
-  async function login(email: string, password: string): Promise<boolean> {
+  // ==================================================================================
+  // 🔥 LOGIN REAL VIA API JAVA ORACLE
+  // ==================================================================================
+  async function login(email: string, password: string) {
     try {
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ dsEmail: email, dsSenha: password })
+      });
 
-      // 🔥 ADMINISTRADOR
-      if (email === "admin@dimmer.com" && password === "123456") {
-        const admin: User = { name: "Admin Dimmer Light", email, role: "admin" };
-        setUser(admin);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(admin));
-        navigate("/portal");  // 👈 vai para página principal
-        return true;
-      }
+      if (!response.ok) return { ok: false, msg: "E-mail ou senha inválidos" };
 
-      // 🔥 FUNCIONÁRIO (montador)
-      if (email === "montador@dimmer.com" && password === "123456") {
-        const montador: User = { name: "Funcionário Dimmer Light", email, role: "montador" };
-        setUser(montador);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(montador));
-        navigate("/portal"); // 👈 tela inicial personalizada
-        return true;
-      }
+      const data = await response.json();
 
-      return false;
+      const loggedUser: User = {
+        id: data.idLogin,
+        name: data.nmUsuario,
+        email: data.dsEmail,
+        role: data.tpRole?.toUpperCase() === "ADMIN" ? "admin" : "montador"
+      };
+
+      setUser(loggedUser);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(loggedUser));
+
+      navigate("/portal");
+      return { ok: true, msg: "Login efetuado com sucesso!" };
+
     } catch (err) {
-      console.error("Erro no login:", err);
-      return false;
+      console.error("❌ ERRO NO LOGIN:", err);
+      return { ok: false, msg: "Falha ao conectar ao servidor" };
     }
   }
 
-  // LOGOUT → VOLTA PARA LOGIN
+  // ==================================================================================
+  // LOGOUT — SEM PISCAR, SEM VOLTAR PARA PÁGINA ERRADA
+  // ==================================================================================
   function logout() {
     setUser(null);
     localStorage.removeItem(STORAGE_KEY);
-    navigate("/login");  // 🔥 agora sai corretamente
+
+    setTimeout(() => navigate("/login"), 350); // saída suave
   }
 
-  // Mantém sessão ativa ao reabrir o app
+  // Mantém sessão ativa após atualizar página
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) setUser(JSON.parse(stored));
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) setUser(JSON.parse(saved));
   }, []);
 
   return (
@@ -75,7 +86,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// HOOK PARA ACESSAR O CONTEXTO
 export function useAuth() {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error("useAuth deve ser usado dentro de AuthProvider");
