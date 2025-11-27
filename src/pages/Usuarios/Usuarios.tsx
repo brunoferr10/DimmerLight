@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Trash, UserPlus, Edit3 } from "lucide-react";
 
-const API = "http://localhost:8080/login"; // ⬅ ajuste se estiver em servidor online
+const API = "https://dimmerlight.onrender.com/login"; // ⬅ ajuste se estiver em servidor online
 
 export default function Usuarios() {
 

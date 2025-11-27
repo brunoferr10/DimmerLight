@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 
+// Tipo padrão vindo do backend
 type User = {
   id: number;
   name: string;
@@ -17,11 +18,11 @@ type AuthContextValue = {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-// 🔐 STORAGE
+// STORAGE
 const STORAGE_KEY = "dimmer-user-login";
 
-// 🌎 URL do seu backend Oracle
-const API_URL = "http://localhost:8080/login/auth";
+// URL do login
+const API_URL = "https://dimmerlight.onrender.com/login/auth";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -29,9 +30,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const isAuthenticated = !!user;
 
-  // ==================================================================================
-  // 🔥 LOGIN REAL VIA API JAVA ORACLE
-  // ==================================================================================
+  // LOGIN CORRIGIDO ✔
   async function login(email: string, password: string) {
     try {
       const response = await fetch(API_URL, {
@@ -48,32 +47,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         id: data.idLogin,
         name: data.nmUsuario,
         email: data.dsEmail,
-        role: data.tpRole?.toUpperCase() === "ADMIN" ? "admin" : "montador"
+        role: data.tpRole.toUpperCase() === "ADMIN" ? "admin" : "montador"
       };
 
       setUser(loggedUser);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(loggedUser));
 
       navigate("/portal");
-      return { ok: true, msg: "Login efetuado com sucesso!" };
+      return { ok: true, msg: "Login bem-sucedido!" };
 
-    } catch (err) {
-      console.error("❌ ERRO NO LOGIN:", err);
-      return { ok: false, msg: "Falha ao conectar ao servidor" };
+    } catch (e) {
+      return { ok: false, msg: "Erro ao conectar ao servidor!" };
     }
   }
 
-  // ==================================================================================
-  // LOGOUT — SEM PISCAR, SEM VOLTAR PARA PÁGINA ERRADA
-  // ==================================================================================
   function logout() {
     setUser(null);
     localStorage.removeItem(STORAGE_KEY);
-
-    setTimeout(() => navigate("/login"), 350); // saída suave
+    navigate("/login");
   }
 
-  // Mantém sessão ativa após atualizar página
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) setUser(JSON.parse(saved));
@@ -88,6 +81,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export function useAuth() {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth deve ser usado dentro de AuthProvider");
+  if (!ctx) throw new Error("useAuth deve ser usado dentro do AuthProvider");
   return ctx;
 }
