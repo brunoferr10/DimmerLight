@@ -1,13 +1,15 @@
 import { FormEvent, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import { motion } from "framer-motion";
+import logo from "@/assets/logo.jpeg";
 
 export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation() as any;
 
-  const [email, setEmail] = useState("admin@arrumai.com");
+  const [email, setEmail] = useState("admin@dimmer.com");
   const [password, setPassword] = useState("123456");
   const [error, setError] = useState("");
 
@@ -18,82 +20,100 @@ export default function Login() {
     const ok = await login(email, password);
 
     if (ok) {
-      const redirectTo = location.state?.from || "/painel";
+      const redirectTo = location.state?.from || "/portal";
       navigate(redirectTo, { replace: true });
     } else {
-      setError("Credenciais inválidas. Use admin@arrumai.com / 123456");
+      setError("Credenciais inválidas. Tente novamente.");
     }
   }
 
   return (
-    <section className="flex items-center justify-center min-h-screen px-4 bg-slate-100 dark:bg-[#0a0a0a]">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-md bg-white dark:bg-[#111] border border-slate-300 dark:border-[#222] rounded-2xl p-8 shadow-xl space-y-4"
-      >
-        {/* TÍTULO */}
-        <h2 className="text-2xl font-bold text-center text-slate-800 dark:text-white">
-          Acessar o Painel
-        </h2>
+    <motion.section
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 1.2 }}
+      className="min-h-screen flex items-center justify-center px-6
+      bg-gradient-to-b from-[#0a0d14] to-[#0f172a]"
+    >
 
-        <p className="text-xs text-center text-slate-500 dark:text-slate-400">
-          Login local apenas para fins acadêmicos.
-        </p>
+      <motion.form
+        initial={{ scale: 0.92, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 1, ease: "easeOut" }}
+        onSubmit={handleSubmit}
+        className="w-full max-w-md bg-[#0f172a]/50 border border-[#203454]
+        backdrop-blur-xl rounded-3xl p-10 shadow-[0_0_40px_rgba(0,0,0,0.35)]
+        text-white space-y-6"
+      >
+
+        {/* LOGO REDONDO */}
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.2, duration: 0.8 }}
+          className="flex flex-col items-center gap-4 mb-3"
+        >
+          <img
+            src={logo}
+            className="w-24 h-24 rounded-full border-4 border-[#3b82f6] shadow-xl
+            drop-shadow-[0_0_25px_#3b82f6] animate-[pulse_3s_ease-in-out_infinite]"
+          />
+
+          <h2 className="text-2xl font-bold tracking-wide text-center text-gray-200">
+            Bem-vindo ao Sistema<br />
+            <span className="text-[#3b82f6] font-extrabold">Dimmer Light</span>
+          </h2>
+        </motion.div>
 
         {/* CAMPO EMAIL */}
         <div className="flex flex-col gap-1">
-          <label className="text-sm text-slate-700 dark:text-slate-300">
-            E-mail
-          </label>
+          <label className="text-sm font-medium text-[#b7c4dd]">E-mail</label>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="border rounded-lg px-3 py-2 text-sm bg-slate-50 dark:bg-[#1a1a1a] 
-              border-slate-300 dark:border-[#333] text-slate-800 dark:text-white"
+            className="px-3 py-2 rounded-lg bg-[#1a2335] border border-[#334155]
+            focus:border-[#3b82f6] outline-none text-sm"
+            required
           />
         </div>
 
         {/* CAMPO SENHA */}
         <div className="flex flex-col gap-1">
-          <label className="text-sm text-slate-700 dark:text-slate-300">
-            Senha
-          </label>
+          <label className="text-sm font-medium text-[#b7c4dd]">Senha</label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="border rounded-lg px-3 py-2 text-sm bg-slate-50 dark:bg-[#1a1a1a] 
-              border-slate-300 dark:border-[#333] text-slate-800 dark:text-white"
+            className="px-3 py-2 rounded-lg bg-[#1a2335] border border-[#334155]
+            focus:border-[#3b82f6] outline-none text-sm"
+            required
           />
         </div>
 
         {/* ERRO */}
-        {error && <p className="text-xs text-red-500">{error}</p>}
+        {error && (
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-xs text-red-400 text-center"
+          >
+            {error}
+          </motion.p>
+        )}
 
         {/* BOTÃO */}
-        <button
+        <motion.button
+          whileTap={{ scale: 0.95 }}
+          whileHover={{ scale: 1.03 }}
           type="submit"
-          className="w-full rounded-lg bg-orange-600 dark:bg-orange-500 
-            hover:bg-orange-700 dark:hover:bg-orange-400 
-            text-white text-sm font-semibold py-2 transition-all"
+          className="w-full py-3 rounded-lg bg-[#3b82f6] hover:bg-[#2563eb]
+          font-semibold text-sm tracking-wide shadow-lg transition-all"
         >
           Entrar
-        </button>
+        </motion.button>
 
-        {/* ACESSO PADRÃO */}
-        <div className="mt-4 p-3 rounded-lg bg-slate-200 dark:bg-[#1a1a1a] border border-slate-300 dark:border-[#222] text-center">
-          <p className="text-xs text-slate-600 dark:text-slate-400">
-            🔐 <strong>Acesso padrão:</strong>
-          </p>
-          <p className="text-xs text-slate-700 dark:text-white mt-1">
-            <strong>Email:</strong> admin@arrumai.com
-          </p>
-          <p className="text-xs text-slate-700 dark:text-white">
-            <strong>Senha:</strong> 123456
-          </p>
-        </div>
-      </form>
-    </section>
+      </motion.form>
+    </motion.section>
   );
 }

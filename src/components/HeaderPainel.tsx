@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import Logo from "../assets/logo.jpeg";
-import ThemeSwitch from "./ThemeSwitch";
 import { Menu, X } from "lucide-react";
 
 export default function HeaderPainel() {
@@ -104,7 +103,7 @@ export default function HeaderPainel() {
             Sair
           </button>
 
-          <ThemeSwitch />
+        
         </div>
       </aside>
     </>

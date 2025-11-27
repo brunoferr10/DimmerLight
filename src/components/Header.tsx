@@ -1,5 +1,4 @@
 import { NavLink, Link } from "react-router-dom";
-import ThemeSwitch from "./ThemeSwitch";
 import Logo from "@/assets/logo.jpeg";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
@@ -11,11 +10,8 @@ export default function Header() {
   const closeMenu = () => setOpen(false);
 
   const itens = [
-    { path: "/", label: "Home" },
-    { path: "/integrantes", label: "Integrantes" },
-    { path: "/sobre", label: "Sobre" },
-    { path: "/faq", label: "FAQ" },
-    { path: "/contato", label: "Contato" },
+    { path: "/", label: "Pagina Inicial" },
+    { path: "/eventosDaniel", label: "Eventos Daniel" }, 
   ];
 
   const linkBase =
@@ -23,15 +19,15 @@ export default function Header() {
 
   return (
     <>
-      {/* BOTÃO MOBILE */}
+      {/* BOTÃO HAMBURGER - MOBILE */}
       <button
         onClick={toggleMenu}
-        className="lg:hidden fixed top-4 left-4 z-[60] bg-[#ff6600] p-2 rounded-lg shadow-lg"
+        className="lg:hidden fixed top-4 left-4 z-[60] bg-[#1e3a8a] p-2 rounded-lg shadow-lg"
       >
-        <Menu size={25} className="text-black" />
+        <Menu size={25} className="text-white" />
       </button>
 
-      {/* OVERLAY MOBILE */}
+      {/* FUNDO CLICK PARA FECHAR MENU */}
       {open && (
         <div
           onClick={closeMenu}
@@ -39,21 +35,19 @@ export default function Header() {
         />
       )}
 
-      {/* SIDEBAR */}
+      {/* SIDEBAR ORIGINAL */}
       <aside
         className={`
-          fixed top-0 left-0 h-full bg-[#0d0d0d] 
-          text-white shadow-2xl border-r border-[#1f1f1f] 
-          flex flex-col z-50 transition-all duration-300
-
+          fixed top-0 left-0 h-full bg-[#0d0d0d] text-white 
+          shadow-2xl border-r border-[#1f1f1f] flex flex-col 
+          z-50 transition-all duration-300
           ${open ? "translate-x-0 w-60" : "-translate-x-full w-60"}
           lg:translate-x-0 lg:w-60
         `}
       >
-        {/* TOPO */}
+        {/* LOGO + TÍTULO */}
         <div className="flex flex-col items-center py-6 gap-3">
 
-          {/* Botão fechar (mobile) */}
           <button
             onClick={closeMenu}
             className="lg:hidden text-white hover:bg-[#222] p-2 rounded-lg"
@@ -61,19 +55,18 @@ export default function Header() {
             <X size={26} />
           </button>
 
-          {/* LOGO */}
           <img
             src={Logo}
-            alt="ArrumAi"
-            className="w-24 h-24 object-cover rounded-full border-2 border-[#ff6600] shadow-lg"
+            alt="Dimmer Light"
+            className="w-24 h-24 object-cover rounded-full border-2 border-[#1e3a8a] shadow-lg"
           />
 
           <h1 className="text-lg font-bold tracking-wide">
-            <span className="text-[#ff6600]">ARRUM</span>AI
+            <span className="text-[#1e3a8a]">DIMMER</span>LIGHT
           </h1>
         </div>
 
-        {/* LINKS */}
+        {/* MENU LINKS */}
         <nav className="flex-1 px-4 mt-2 space-y-1">
           {itens.map((item) => (
             <NavLink
@@ -83,8 +76,8 @@ export default function Header() {
               className={({ isActive }) =>
                 `${linkBase} ${
                   isActive
-                    ? "bg-[#ff6600] text-black"
-                    : "hover:bg-[#1f1f1f] hover:text-[#ff6600]"
+                    ? "bg-[#1e3a8a] text-white"                // 🔥 Destaque azul ativo
+                    : "hover:bg-[#1e3a8a]/30 hover:text-[#3b82f6]" // 🔥 Hover azul suave
                 }`
               }
             >
@@ -93,16 +86,15 @@ export default function Header() {
           ))}
         </nav>
 
-        {/* LOGIN / THEME */}
+        {/* BOTÃO LOGIN */}
         <div className="p-4 border-t border-[#1f1f1f] flex flex-col gap-3 items-center">
           <Link
             to="/login"
             onClick={closeMenu}
-            className="w-full bg-[#ff6600] text-black py-2 rounded-lg font-semibold text-center hover:bg-[#ff8533] transition"
+            className="w-full bg-[#1e3a8a] text-white py-2 rounded-lg font-semibold text-center hover:bg-[#3b82f6] transition"
           >
             Login
           </Link>
-          <ThemeSwitch />
         </div>
       </aside>
     </>

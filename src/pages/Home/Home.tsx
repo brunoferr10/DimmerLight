@@ -1,60 +1,43 @@
-import { useTheme } from "@/contexts/ThemeContext";
 import { useNavigate } from "react-router-dom";
-import fotoHome from "@/assets/fotoHome.jpeg";
+import logo from "@/assets/logo.jpeg";
 
-export default function Home() {
-  const { theme } = useTheme();
-  const isDark = theme === "dark";
-  const navigate = useNavigate();
-
-  const handleSaibaMais = () => {
-    navigate("/sobre");
-  };
+export default function HomePortal() {
+  const nav = useNavigate();
 
   return (
-    <section
-      className={`min-h-screen w-full flex flex-col lg:flex-row items-center justify-center px-6 lg:px-16 transition-all duration-500 ${
-        isDark ? "bg-[#0b0b0b] text-white" : "bg-[#ffffff] text-gray-900"
-      }`}
-    >
-      {/* CONTAINER GERAL */}
-      <div className="w-full max-w-6xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-10 py-20">
+    <div className="min-h-screen bg-[#0a0d14] text-white p-8">
 
-        {/* TEXTO */}
-        <div className="flex-1 text-center lg:text-left px-2 lg:px-0">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-6 leading-tight">
-            <span className="text-[#ff6600]">Construa</span> com confiança.
-            <br />
-            Reformas e serviços <br /> de forma inteligente.
-          </h1>
-
-          <p className="text-base md:text-lg leading-relaxed text-gray-400 mb-6">
-            O <span className="text-[#ff6600] font-semibold">ArrumAi</span>{" "}
-            conecta clientes a profissionais de obras com transparência e
-            segurança.
-          </p>
-
-          <p className="text-base md:text-lg leading-relaxed text-gray-400 mb-8">
-            Profissionais avaliados, suporte dedicado e orçamentos rápidos.
-          </p>
-
-          <button
-            onClick={handleSaibaMais}
-            className="border border-[#ff6600] hover:bg-[#ff6600] hover:text-white text-[#ff6600] font-semibold py-3 px-6 rounded-lg transition-all shadow-md hover:shadow-lg"
-          >
-            Saiba Mais
-          </button>
+      {/* Cabeçalho com perfil/resumo */}
+      <div className="flex justify-between items-center mb-10">
+        <div>
+          <p className="text-gray-400 text-sm">Bem-vindo(a)</p>
+          <h2 className="text-xl font-semibold">Usuário Dimmer Light</h2>
         </div>
-
-        {/* IMAGEM */}
-        <div className="flex-1 flex justify-center mt-8 lg:mt-0">
-          <img
-            src={fotoHome}
-            alt="Profissional de obras"
-            className="rounded-2xl shadow-xl border border-[#2a2a2a] w-[300px] sm:w-[380px] md:w-[480px] lg:w-[520px] object-cover"
-          />
-        </div>
+        <img src={logo} className="w-14 rounded-full border border-[#3b82f6]"/>
       </div>
-    </section>
+
+      {/* MENU PRINCIPAL — estilo cartão de app */}
+      <div className="grid grid-cols-2 gap-5">
+
+        <button onClick={() => nav("/eventosDaniel")}
+          className="bg-[#111827] p-6 rounded-xl border border-[#3b82f6] shadow-lg hover:scale-105 transition">
+          📅 Eventos Daniel
+        </button>
+
+        <button className="bg-[#111827] p-6 rounded-xl border border-[#3b82f6] shadow-lg hover:scale-105 transition">
+          ➕ Novo Evento
+        </button>
+
+        <button className="bg-[#111827] p-6 rounded-xl border border-[#3b82f6] shadow-lg hover:scale-105 transition">
+          📄 Meus Eventos
+        </button>
+
+        <button className="bg-[#111827] p-6 rounded-xl border border-[#3b82f6] shadow-lg hover:scale-105 transition">
+          💰 Valores & Pagamentos
+        </button>
+
+      </div>
+
+    </div>
   );
 }
