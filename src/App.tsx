@@ -5,7 +5,14 @@ import Splash from "./pages/Splash/Splash";
 import Login from "./pages/Login/Login";
 import Portal from "./pages/Home/Home";
 import Usuarios from "./pages/Usuarios/Usuarios";
-import EventosDaniel from "./pages/EventosDaniel/EventosDaniel";
+
+import NovoEvento from "./pages/NovoEvento/NovoEvento";
+import MeusEventos from "./pages/MeusEventos/MeusEventos";
+import FuncionariosEquipe from "./pages/Funcionarios/FuncionariosEquipe";
+
+// ⬇ IMPORTAR PÁGINA DE ARTISTAS
+import Artistas from "./pages/Artistas/Artistas";
+
 import { useAuth } from "./contexts/AuthContext";
 
 /* ========================== ANIMAÇÃO PADRÃO DE ROTAS ========================== */
@@ -46,18 +53,21 @@ export default function App() {
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
         
-          {/* 🔥 PÚBLICAS */}
+          {/* 🔥 ROTAS LIVRES */}
           <Route path="/" element={<PageTransition><Splash /></PageTransition>} />
           <Route path="/login" element={<PageTransition><Login /></PageTransition>} />
           
-          {/* 🔥 PRIVADAS (LOGIN OBRIGATÓRIO) */}
+          {/* 🔐 ROTAS PRIVADAS */}
           <Route path="/portal" element={<PrivateRoute><PageTransition><Portal /></PageTransition></PrivateRoute>} />
-          <Route path="/eventosDaniel" element={<PrivateRoute><PageTransition><EventosDaniel /></PageTransition></PrivateRoute>} />
-
-          {/* 🔥 SOMENTE ADMIN */}
+          <Route path="/novo-evento" element={<PrivateRoute><PageTransition><NovoEvento /></PageTransition></PrivateRoute>} />
+          <Route path="/meus-eventos" element={<PrivateRoute><PageTransition><MeusEventos /></PageTransition></PrivateRoute>} />
+      
+          {/* 👑 EXCLUSIVO ADMIN */}
           <Route path="/usuarios" element={<AdminRoute><PageTransition><Usuarios /></PageTransition></AdminRoute>} />
+          <Route path="/funcionarios" element={<AdminRoute><PageTransition><FuncionariosEquipe /></PageTransition></AdminRoute>} />
+          <Route path="/artistas" element={<AdminRoute><PageTransition><Artistas /></PageTransition></AdminRoute>} />
 
-          {/* QUALQUER ROTA ERRADA → LOGIN */}
+          {/* REDIRECIONAMENTO */}
           <Route path="*" element={<Navigate to="/login" replace />} />
 
         </Routes>

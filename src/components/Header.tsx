@@ -11,7 +11,6 @@ export default function Header() {
 
   const itens = [
     { path: "/", label: "Pagina Inicial" },
-    { path: "/eventosDaniel", label: "Eventos Daniel" }, 
   ];
 
   const linkBase =

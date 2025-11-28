@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Calendar, PlusCircle, ClipboardList, DollarSign, Users, LogOut } from "lucide-react";
+import { Calendar, PlusCircle, ClipboardList, DollarSign, Users, Mic, LogOut } from "lucide-react";
 import logo from "@/assets/logo.jpeg";
 import { useAuth } from "../../contexts/AuthContext";
 import { Link, Navigate } from "react-router-dom";
@@ -12,10 +12,10 @@ export default function Portal() {
 
   /** 🔥 MENU DO ADMIN */
   const cardsAdmin = [
-    { label: "Eventos Daniel", icon: <Calendar size={28} />, to: "/eventosDaniel" },
     { label: "Funcionários / Equipe", icon: <Users size={28} />, to: "/funcionarios" },
     { label: "Valores & Pagamentos", icon: <DollarSign size={28} />, to: "/pagamentos" },
-    { label: "Gerenciar Usuários", icon: <Users size={28} />, to: "/usuarios" } // 👈 ADICIONADO FIXO
+    { label: "Gerenciar Usuários", icon: <Users size={28} />, to: "/usuarios" },
+    { label: "Artistas & Cachês", icon: <Mic size={28} />, to: "/artistas" } // 🔥 NOVO CARD ADICIONADO
   ];
 
   /** 🔥 MENU DO MONTADOR */
