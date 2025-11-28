@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { motion } from "framer-motion";
@@ -8,20 +8,29 @@ export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState("admin@dimmer.com");
-  const [password, setPassword] = useState("123456");
+  const [email, setEmail] = useState("");         // ❗ LIMPO
+  const [password, setPassword] = useState("");   // ❗ LIMPO
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);  // 🔥 Estado de carregamento
+
+  // 🚀 Acorda a API automaticamente quando abrir a tela
+  useEffect(() => {
+    fetch("https://dimmerlight.onrender.com/login").catch(() => {});
+  }, []);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError("");
+    setLoading(true); // 🔥 Ativa animação
 
     const result = await login(email, password);
+
+    setLoading(false);
 
     if (result.ok) {
       navigate("/portal");
     } else {
-      setError(result.msg);
+      setError(result.msg || "Erro ao fazer login.");
     }
   }
 
@@ -38,7 +47,8 @@ export default function Login() {
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.9 }}
         onSubmit={handleSubmit}
-        className="w-full max-w-md bg-[#111827] border border-[#334155] p-10 rounded-3xl shadow-xl text-white space-y-6"
+        className="w-full max-w-md bg-[#111827] border border-[#334155] p-10 
+        rounded-3xl shadow-xl text-white space-y-6"
       >
 
         <div className="text-center flex flex-col items-center">
@@ -50,25 +60,29 @@ export default function Login() {
           type="email"
           value={email}
           onChange={e => setEmail(e.target.value)}
-          placeholder="E-mail"
+          placeholder="Digite seu e-mail"
           className="w-full p-3 rounded bg-[#1e293b] border border-[#334155]"
+          required
         />
 
         <input
           type="password"
           value={password}
           onChange={e => setPassword(e.target.value)}
-          placeholder="Senha"
+          placeholder="Digite sua senha"
           className="w-full p-3 rounded bg-[#1e293b] border border-[#334155]"
+          required
         />
 
         {error && <p className="text-red-400 text-center">{error}</p>}
 
         <motion.button
-          whileHover={{ scale: 1.05 }}
-          className="w-full p-3 rounded bg-[#3b82f6] font-bold"
+          whileHover={{ scale: !loading ? 1.05 : 1 }}
+          disabled={loading}
+          className={`w-full p-3 rounded font-bold transition-all 
+          ${loading ? "bg-[#1d4ed8]" : "bg-[#3b82f6] hover:bg-[#2563eb]"}`}
         >
-          Entrar
+          {loading ? "🔄 Entrando..." : "Entrar"} {/* 🔥 ANIMAÇÃO */}
         </motion.button>
 
       </motion.form>
